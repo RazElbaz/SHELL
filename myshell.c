@@ -11,7 +11,9 @@
 // https://www.csl.mtu.edu/cs4411.ck/www/NOTES/signal/handler.html
 void termination_handler(int signum)
 {
+    printf("\n");
     printf("You typed Control-C!");
+    printf("\n");
 }
 
 int main() {
@@ -20,13 +22,12 @@ int main() {
     char *outfile;
     int i, fd, amper, redirect, retid, status;
     char *argv[10];
-    char prompt[1024] = "hello";
+    char prompt[1024] = "hello:";
     char last[1024]="last command";
-if (signal (SIGINT, termination_handler) == SIG_IGN)
-    signal (SIGINT, SIG_IGN);
+    signal(SIGINT, termination_handler);
 while (1)
 {
-    printf("%s: ",prompt);
+    printf("%s ",prompt);
     fgets(command, 1024, stdin);
     command[strlen(command) - 1] = '\0';
 
@@ -70,14 +71,14 @@ while (1)
             argv[i] = NULL;
         }
     //Question 5 
-    if (! strcmp(argv[0], "cd")){   
+    else if (! strcmp(argv[0], "cd")){   
      if (chdir(argv[1]) == -1){  // chdir is a system call.
         perror("System cannot find the path specified");
      }
     continue;
     }
     //Question 3+4  
-    if (! strcmp(argv[0], "echo")){   
+    else if (! strcmp(argv[0], "echo")){   
             if(!strcmp(argv[1], "$?")){
                 printf("%d\n", status);
             }
