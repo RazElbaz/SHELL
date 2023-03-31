@@ -27,6 +27,13 @@ int main() {
     signal(SIGINT, termination_handler);
 while (1)
 {
+    if(argv[0] != NULL){
+        strcpy(last, "");
+        for (size_t i = 0; argv[i] != NULL; i++){
+            strcat(last, argv[i]);
+            strcat(last, " ");
+            }
+        }
     printf("%s ",prompt);
     fgets(command, 1024, stdin);
     command[strlen(command) - 1] = '\0';
