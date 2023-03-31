@@ -17,13 +17,13 @@ void termination_handler(int signum)
 }
 
 int main() {
-    char command[1024];
+    char command[1024]="echo command";
     char *token;
     char *outfile;
     int i, fd, amper, redirect, retid, status;
     char *argv[10];
     char prompt[1024] = "hello:";
-    char last[1024]="last command";
+    char last[1024]="echo No previous command exists";
     signal(SIGINT, termination_handler);
 while (1)
 {
@@ -68,11 +68,13 @@ while (1)
     }
     //Question 7
     if(!strcmp(argv[0], "quit"))
-        exit(0);
+            exit(0);
+
     //Question 6
-    if (!strcmp(argv[0], "!!"))
+    else if (!strcmp(argv[0], "!!"))
         {
             strcpy(command, last);
+            // *parse command line *
             i = 0;
             token = strtok(command, " ");
             while (token != NULL)
@@ -83,6 +85,7 @@ while (1)
             }
             argv[i] = NULL;
         }
+  
     //Question 5 
     else if (! strcmp(argv[0], "cd")){   
      if (chdir(argv[1]) == -1){  // chdir is a system call.
