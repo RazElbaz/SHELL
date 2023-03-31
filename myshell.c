@@ -53,6 +53,19 @@ while (1)
     }
     else 
         amper = 0; 
+    
+    if(!strcmp(argv[0],"pwd")){
+        char buffer[100];
+        if(getcwd(buffer,sizeof(buffer)))//Get current working directory and store it in buffer.
+	{
+		printf("%s\n",buffer);
+	}
+	else
+	{
+		perror("getcwd");//Display the error occurred with getcwd.
+	}
+    continue;
+    }
     //Question 7
     if(!strcmp(argv[0], "quit"))
         exit(0);
