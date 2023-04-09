@@ -23,7 +23,9 @@ pid_t ProccesID = -1;
 int last_command=0;
 char *argv[1024];
 char *outfile;
+int pipeFD[2];
 int enter=0;
+
 
 ///////////////////////////couters//////////////////////////////////////
 char **CountPIPE(char **args)
@@ -55,25 +57,6 @@ int CountARGS(char **args)
     return cnt;
 }
 
-///////////////////////////////////////////Auxiliary functions//////////////////////////////////////
-
-// Function to implement `strcat()` function in C
-//https://developers.redhat.com/blog/2019/08/12/efficient-string-copying-and-concatenation-in-c#attempts_to_overcome_limitations
-char *MYstrcat(const char *destination, const char *source)
-{
-    size_t size_destination = strlen(destination);
-    size_t size_source = strlen(source);
-    char *new_str = malloc(size_destination + size_source);
-    if (!new_str)
-        return NULL;
-    memcpy(new_str, destination, size_destination);
-    printf("%ld %ld ", size_destination , size_source);
-    memcpy(new_str + size_destination, source, size_source);
-    new_str[size_destination+size_source]='\0';
-    return new_str;
-}
-
-
 void split(char *command)
 {
     char *token = strtok(command, " ");
@@ -95,7 +78,7 @@ int execute(char **args)
 {
     int fd, amper, rv = -1,pipe_num = 0, i = CountARGS(args);
     char **pipPointer = CountPIPE(args); 
-    int pipeFD[2];
+    
     
     if (pipPointer != NULL)
     {
