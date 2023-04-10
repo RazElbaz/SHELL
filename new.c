@@ -378,43 +378,43 @@ int main()
     strcpy(prompt, "hello: ");
     last_command=0;
     enter=0;
-    // //https://stackoverflow.com/questions/39089086/how-to-make-program-not-wait-for-input
-    //         // define a terminal configuration data structure
-    //     struct termios term;
-
-    //     // copy the stdin terminal configuration into term
-    //     tcgetattr( fileno(stdin), &term );
-
-    //     // turn off Canonical processing in term
-    //     term.c_lflag &= ~ICANON;
-
-    //     // set the terminal configuration for stdin according to term, now
-    //     tcsetattr( fileno(stdin), TCSANOW, &term);
+    // new_command= malloc(sizeof(char) * strlen(""));
+    //     strcpy(new_command, "");
+    //     add(&commands, new_command);
+    //     last_command = commands.size;
 
 
+    char a,b;
+    int j=0;
+            struct termios originalTermios, newTermios;
+        tcgetattr(STDIN_FILENO, &originalTermios);
+        newTermios = originalTermios;
+        newTermios.c_lflag &= ~(ICANON);
+        tcsetattr(STDIN_FILENO, TCSANOW, &newTermios);
     while (1)
     {
+        //http://www.java2s.com/Tutorial/C/0080__printf-scanf/bMovesthecursortothelastcolumnofthepreviousline.htm
+        printf("\r");
         printf("%s", prompt);
         c=getchar();
+        // while((c = getchar()) != 'Q'){
+
+        // // if(j!=0){printf("%s", prompt);}
+        // j++;
+         
         if (c == '\033')
 		{
-    //                 struct termios originalTermios, newTermios;
-    // tcgetattr(STDIN_FILENO, &originalTermios);
-    // newTermios = originalTermios;
-    // newTermios.c_lflag &= ~(ICANON | ECHO);
-    // tcsetattr(STDIN_FILENO, TCSANOW, &newTermios);
+        // printf("\033[2K");   // Clear the entire line
+        printf("\33[2K");
         
-
-
-			//https://itnext.io/overwrite-previously-printed-lines-4218a9563527
-			//and they delete the previous line
-			printf("\033[1A");//line up
-			printf("\x1b[2K");//delete line
-			getchar(); //skip the [
-			switch(getchar()) { // the real value
+        // printf("%s",prompt);
+        // printf("\033\b"); 
+			a=getchar(); //skip the [
+            b=getchar();
+			switch(b) { // the real value
 			case 'A':
-            printf("before %d \n", last_command);
-            printf("before %d \n", commands.size);
+            // printf("before %d \n", last_command);
+            // printf("before %d \n", commands.size);
                 if (commands.size==0)
                 {
                     break;
@@ -426,16 +426,28 @@ int main()
                 {
                     last_command--;
                 }
-                printf("after %d \n", last_command);
-                printf("%s %s\n", prompt, (char *)get_command(&commands, last_command));
-			    break;
+                printf("\b");
+                printf("\b");
+                printf("\b");
+                // printf("\b");
+                // printf("\b");
+                // printf("\b");
+                // printf("\033[2K");   // Clear the entire line
+                  // Move the cursor to the beginning of the line
+                printf("%s", (char *)get_command(&commands, last_command));
+			    // printf("hello: ");
+                // printf("\b");
+                // printf("\r");
+                break;
 			case 'B':
-                printf("before %d \n", last_command);
-                printf("before %d \n", commands.size);
+            // printf("\033[2K");   // Clear the entire line
+                // printf("before %d \n", last_command);
+                // printf("before %d \n", commands.size);
                 if (commands.size==0 ||last_command >= commands.size-1 )
                 {
                     if(last_command == commands.size-1){
                         last_command++;
+                        continue;
                     }
                     break;
                 }
@@ -443,75 +455,57 @@ int main()
                 {
                     last_command++;
                 }
-                // if(last_command>=commands.size){
-                //     last_command=commands.size;
-                // }
-                // else{
-                //     break;
-                // }
-                printf("after last command %d \n", last_command);
-                printf("%s %s\n", prompt, (char *)get_command(&commands, last_command));
+                                
+                printf("\b");
+                printf("\b");
+                printf("\b");
+                // printf("\033[2K");   // Clear the entire line
+                // printf("\033[0G");   // Move the cursor to the beginning of the line
+                printf("%s", (char *)get_command(&commands, last_command)); // move up and clear line
+                // printf("\r");
+                // printf("hello: ");
+                // printf("\b");
                 break;
 
     		}
+            // printf("\n");
         command[0]=c;
-        fgets(command+3 ,1021, stdin);
-        continue;
+        // command[1]=a;
+        // command[2]=b;
+        // fgets(command+1 ,1024, stdin);
+         continue;
         }
 
-
-
-        // if (c == '\n' && enter==1)
-        // {
-        // split((char *)get_command(&commands, last_command));
-        // // execute((char **)get_command(&commands, last_command));
-        // status = change_status(argv);
-        //     // enter++;
-        //     if(enter==1)
-        //     {
-        //         enter=0;
-        //         char currentCodeLine[1024]; 
-        //         fgets(currentCodeLine, 1024, stdin);
-        //         char* commandcurr = "bash";
-        //         char* argument_list[] = {"bash", "-c", currentCodeLine, NULL};
-        //         if (fork() == 0) {
-        //             // Newly spawned child Process. This will be taken over by "bash"
-        //             int status_code = execvp(commandcurr, argument_list);
-        //             printf("bash has taken control of this child process. This won't execute unless it terminates abnormally!\n");
-        //             if (status_code == -1) {
-        //                 printf("Terminated Incorrectly\n");
-        //                 return 1;
-        //             }
-        //         }
-                
-
-        //     }
-        //     break;
-        //     //         printf("\n\n");
-        //     // wait(&status);
-        //     //             continue;
-        // }
         else if (c == '\n')
         {
-            printf("\n");
+        
         enter=enter+1;
         split((char *)get_command(&commands, last_command));
-        // execute((char **)get_command(&commands, last_command));
+        // execute((char **)get_command(&commands, last_command)); //bad
         status = change_status(argv);
         command[0]=c;
-        fgets(command+3 ,1021, stdin);
-        if (enter==1)
-        {
-            printf("%d",enter);
-            enter=0;
-            char* argument_list[] = {command, "\n\n",NULL};
-            execvp(command, argument_list);
-        }
+        fgets(command+1 ,1023, stdin);
+        // printf("\n");
+        // if (enter==1)
+        // {
+        //     printf("%d",enter);
+        //     enter=0;
+        //     char* argument_list[] = {command, "\n\n",NULL};
+        //     execvp(command, argument_list);
+        // }
         
         }
         else{
+            // printf("\n");
+        // putchar(c);
         command[0]=c;
+        // printf("%c",c);
+        // putchar(a);
+        // command[1]=a;
+        // putchar(b);
+        // command[2]=b;
         fgets(command+1 ,1023, stdin);
+        
         
         }
 
@@ -555,5 +549,5 @@ int main()
         last_command = commands.size;
         split(command);
         status = change_status(argv);
+        }
     }
-}
