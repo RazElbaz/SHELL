@@ -4,57 +4,59 @@
 #include <stdbool.h>
 #include "linkedlist.h"
 
-// //display the list
-// void printList(List *list) {
-//    	if (!list || list->size == 0)
-// 	{
-// 		return;
-// 	}
-//    struct Node *ptr = list->head;
-//    printf("\n[ ");
+//display the list
+void printList(List *list) {
+   	if (!list || list->size == 0)
+	{
+		return;
+	}
+   struct Node *ptr = list->head;
+   printf("\n[ ");
 	
-//    //start from the beginning
-//    while(ptr != NULL) {
-//       printf("(%d,%d) ",ptr->data,ptr->data);
-//       ptr = ptr->next;
-//    }
+   //start from the beginning
+   while(ptr != NULL) {
+      printf("(%s,%s) ",ptr->data->key,ptr->data->value);
+      ptr = ptr->next;
+   }
 	
-//    printf(" ]");
-// }
+   printf(" ]");
+}
 
-// void sort(List *list) {
-// 	if (!list || list->size == 0)
-// 	{
-// 		return NULL;
-// 	}
-//    int i, j, k, tempKey, tempData;
-//    struct Node *current=(Node *)malloc(sizeof(Node));;
-//    struct Node *next=(Node *)malloc(sizeof(Node));;
+void sort(List *list) {
+	if (!list || list->size == 0)
+	{
+		return;
+	}
+   char* tempKey;
+   char* tempData;
+   int i, j, k;
+   struct Node *current=(Node *)malloc(sizeof(Node));
+   struct Node *next=(Node *)malloc(sizeof(Node));
+   tempData=malloc(sizeof(char *)*1024);
+   tempKey=malloc(sizeof(char *)*1024);
+   int size = list->size;
+   k = size ;
 	
-//    int size = length();
-//    k = size ;
-	
-//    for ( i = 0 ; i < size - 1 ; i++, k-- ) {
-//       current = list->head;
-//       next = list->head->next;
+   for ( i = 0 ; i < size - 1 ; i++, k-- ) {
+      current = list->head;
+      next = list->head->next;
 		
-//       for ( j = 1 ; j < k ; j++ ) {   
+      for ( j = 1 ; j < k ; j++ ) {   
 
-//          if ( current->data > next->data ) {
-//             tempData = current->data;
-//             current->data = next->data;
-//             next->data = tempData;
-
-//             tempKey = current->data;
-//             current->data = next->data;
-//             next->data = tempKey;
-//          }
+         if ( current->data->value > next->data->value ) {
+			strcpy(tempData,current->data->value);
+			strcpy(current->data->value , next->data->value);
+			strcpy(next->data->value,tempData);
+			strcpy(tempKey,current->data->value);
+			strcpy(current->data->value,next->data->value);
+			strcpy(next->data->value , tempKey);
+         }
 			
-//          current = current->next;
-//          next = next->next;
-//       }
-//    }   
-// }
+         current = current->next;
+         next = next->next;
+      }
+   }   
+}
 
 void add(List *list, void *data){
 if (!list)
