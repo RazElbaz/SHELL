@@ -228,20 +228,21 @@ int execute(char **args)
 
         while (*echo_var)
         {
-            if (*echo_var && *echo_var[0] == '$')
+            if (*echo_var!=NULL && *echo_var[0] == '$')
             {
-                char *v = NULL;
                 Node *node = variables.head;
+                char *new_variable = NULL;
+                
                 while (node)
                 {
                     if (!strcmp(((Var *)node->data)->key,*echo_var ))
                     {
-                        v=((Var *)node->data)->value;
+                        new_variable=((Var *)node->data)->value;
                     }
                     node = node->next;
                 }
-                if (v != NULL)
-                    printf("%s ", v);
+                if (new_variable != NULL)
+                    printf("%s ", new_variable);
             }
 
             else{
@@ -348,32 +349,34 @@ int change_status(char **args)
         return rv;
     }
 }
-
+//https://www.gnu.org/software/libc/manual/html_node/Basic-Signal-Handling.html
 void termination_handler(int signum)
 {
-    strcpy(command, "^C");
     if (getpid() == mainProcess) {
         printf("\n");
         printf("You typed Control-C!");
         printf("\n");
-        char message[2] = " ";
         write(0, prompt, strlen(prompt)+1);
-        write(0, message, strlen(message)+1);
+        return;
+    }
+    else{
+        fprintf(stderr, "caught signal: %d\n", signum);
+        return;
     }
 }
 
 int main()
 {
     mainProcess = getpid();
-    signal(SIGINT, termination_handler);
-    strcpy(prompt, "hello:");
+    signal(SIGINT, termination_handler); //SIGINT  interrupt from keyboard (ctrl-c)
+    strcpy(prompt, "hello: ");
     char *token;
     char *new_command;
     char c;
     int last_command=0;
     while (1)
     {
-        printf("%s ", prompt);
+        printf("%s", prompt);
         c=getchar();
         if (c == '\033')
 		{
@@ -425,8 +428,6 @@ int main()
     		}
         command[0]=c;
         fgets(command+3 ,1021, stdin);
-        
-        getchar();
         continue;
         }
 
@@ -470,10 +471,18 @@ int main()
         status = change_status(argv);
         command[0]=c;
         fgets(command+3 ,1021, stdin);
+        if (enter==2)
+        {
+            enter=0;
+            printf("%d",enter);
+            continue;
+        }
+        
         }
         else{
         command[0]=c;
         fgets(command+1 ,1023, stdin);
+        
         }
 
     char current_command[1024]; 
