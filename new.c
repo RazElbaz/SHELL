@@ -30,6 +30,8 @@ int pipeFD[2];
 pid_t cpid;
 char *token;
 char *new_command;
+char current_command[1024]; 
+char* end_if="fi\n";
 
 ///////////////////////////couters//////////////////////////////////////
 char **CountPIPE(char **args)
@@ -322,7 +324,7 @@ int main()
     signal(SIGINT, termination_handler); //SIGINT  interrupt from keyboard (ctrl-c)
     strcpy(prompt, "hello: ");
     last_command=0;
-    
+    char* prevCommand=malloc(sizeof(char) * strlen(command));
     int j=0;
             struct termios originalTermios, newTermios;
         tcgetattr(STDIN_FILENO, &originalTermios);
@@ -335,122 +337,77 @@ int main()
         printf("\r");
         printf("%s", prompt);
         c=getchar();
-        // while((c = getchar()) != 'Q'){
-
-        // // if(j!=0){printf("%s", prompt);}
-        // j++;
-         
         if (c == '\033')
 		{
-        // printf("\033[2K");   // Clear the entire line
-        printf("\33[2K");
-        
-        // printf("%s",prompt);
-        // printf("\033\b"); 
+            printf("\33[2K");
 			a=getchar(); //skip the [
             b=getchar();
-			switch(b) { // the real value
+			switch(b) { 
 			case 'A':
-            // printf("before %d \n", last_command);
-            // printf("before %d \n", commands.size);
                 if (commands.size==0)
                 {
                     break;
                 }
-                // if(last_command==1){
-                //     last_command=1;
-                // }
                 else if (last_command>0)
                 {
                     last_command--;
                 }
+                prevCommand=(char *)get_command(&commands, last_command);
                 printf("\b");
                 printf("\b");
                 printf("\b");
-                // printf("\b");
-                // printf("\b");
-                // printf("\b");
-                // printf("\033[2K");   // Clear the entire line
-                  // Move the cursor to the beginning of the line
-                printf("%s", (char *)get_command(&commands, last_command));
-			    // printf("hello: ");
-                // printf("\b");
-                // printf("\r");
+                
+                // printf("%s", (char *)get_command(&commands, last_command));
+                printf("%s %s %d", (char *)get_command(&commands, last_command),prevCommand,last_command);
+
                 break;
 			case 'B':
-            // printf("\033[2K");   // Clear the entire line
-                // printf("before %d \n", last_command);
-                // printf("before %d \n", commands.size);
                 if (commands.size==0 ||last_command >= commands.size-1 )
                 {
                     if(last_command == commands.size-1){
                         last_command++;
-                        continue;
+                        // continue;
                     }
                     break;
                 }
-                else if (last_command < commands.size)
+                else 
                 {
                     last_command++;
                 }
-                                
+                prevCommand=(char *)get_command(&commands, last_command);
                 printf("\b");
                 printf("\b");
                 printf("\b");
-                // printf("\033[2K");   // Clear the entire line
-                // printf("\033[0G");   // Move the cursor to the beginning of the line
-                printf("%s", (char *)get_command(&commands, last_command)); // move up and clear line
-                // printf("\r");
-                // printf("hello: ");
-                // printf("\b");
+                // prevCommand=(char *)get_command(&commands, last_command);
+                
+                printf("%s %s %d", (char *)get_command(&commands, last_command),prevCommand,last_command);
                 break;
 
     		}
-            // printf("\n");
-        // command[0]=c;
-        // command[1]=a;
-        // command[2]=b;
-        // fgets(command+1 ,1024, stdin);
+            command[0]=c;
          continue;
         }
 
         else if (c == '\n')
         {
-        
-        enter=enter+1;
+
         split((char *)get_command(&commands, last_command));
-        
-        // execute((char **)get_command(&commands, last_command)); //bad
+        // command[strlen(command) ] = '\0';
         status = change_status(argv);
-        command[0]=c;
-        // fgets(command+1 ,1023, stdin);
-        //  getchar();
-        // printf("\n");
-        // if (enter==1)
-        // {
-        //     printf("%d",enter);
-        //     enter=0;
-        //     char* argument_list[] = {command, "\n\n",NULL};
-        //     execvp(command, argument_list);
-        // }
-        
+        new_command= malloc(sizeof(char) * strlen(prevCommand)+1);
+        strcpy(new_command, prevCommand);
+        add(&commands, new_command);
+        last_command = commands.size;
+        continue;
         }
         else{
-            // printf("\n");
-        // putchar(c);
         command[0]=c;
-        // printf("%c",c);
-        // putchar(a);
-        // command[1]=a;
-        // putchar(b);
-        // command[2]=b;
         fgets(command+1 ,1023, stdin);
-        command[strlen(command)-1] = '\n';
-        
+        // command[strlen(command)-1] = '\n';
         }
+        printf("%d",last_command);
+            printf("%d",commands.size);
 
-    char current_command[1024]; 
-    char* end_if="fi\n";
     //https://www.digitalocean.com/community/tutorials/execvp-function-c-plus-plus
     if (!strncmp(command, "if", 2)) {
         while (1) {
@@ -475,12 +432,18 @@ int main()
             wait(&status);
             continue;
         }
-        command[strlen(command) - 1] = '\0';
-        if (!strcmp(command, "quit"))
+        
+        if (!strcmp(command, "quit")){
+            command[strlen(command) - 1] = '\0';
             exit(0);
+        }
+            
 
-        if (strcmp(command, "!!"))
-            strcpy(lastCommand, command);
+        if (strcmp(command, "!!")){
+            command[strlen(command) - 1] = '\0';
+strcpy(lastCommand, command);
+        }
+            
         
         new_command= malloc(sizeof(char) * strlen(command));
         strcpy(new_command, command);
