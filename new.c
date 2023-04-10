@@ -23,9 +23,7 @@ pid_t ProccesID = -1;
 int last_command=0;
 char *argv[1024];
 char *outfile;
-int pipeFD[2];
 int enter=0;
-
 
 ///////////////////////////couters//////////////////////////////////////
 char **CountPIPE(char **args)
@@ -57,6 +55,25 @@ int CountARGS(char **args)
     return cnt;
 }
 
+///////////////////////////////////////////Auxiliary functions//////////////////////////////////////
+
+// Function to implement `strcat()` function in C
+//https://developers.redhat.com/blog/2019/08/12/efficient-string-copying-and-concatenation-in-c#attempts_to_overcome_limitations
+char *MYstrcat(const char *destination, const char *source)
+{
+    size_t size_destination = strlen(destination);
+    size_t size_source = strlen(source);
+    char *new_str = malloc(size_destination + size_source);
+    if (!new_str)
+        return NULL;
+    memcpy(new_str, destination, size_destination);
+    printf("%ld %ld ", size_destination , size_source);
+    memcpy(new_str + size_destination, source, size_source);
+    new_str[size_destination+size_source]='\0';
+    return new_str;
+}
+
+
 void split(char *command)
 {
     char *token = strtok(command, " ");
@@ -73,20 +90,26 @@ void split(char *command)
 
 
 ////////////////////////////////////////////////////////////////////////////////////////
-
+//https://stackoverflow.com/questions/43295721/how-to-duplicate-a-child-descriptor-onto-stdout-fileno-and-stderr-fileno ->  fd
+////https://man7.org/linux/man-pages/man2/pipe.2.html-> pipe
 int execute(char **args)
 {
     int fd, amper, rv = -1,pipe_num = 0, i = CountARGS(args);
     char **pipPointer = CountPIPE(args); 
-    
-    
+    int pipeFD[2];
+    pid_t cpid;
     if (pipPointer != NULL)
     {
         pipe_num = 1;
         *pipPointer = NULL;
         pipe(pipeFD);
-
-        if (fork() == 0)
+        cpid = fork();
+        if (cpid == -1)
+        {
+               perror("fork");
+               exit(EXIT_FAILURE);
+        }
+        if (cpid == 0)
         {
             close(pipeFD[1]);
             close(0);
@@ -94,9 +117,42 @@ int execute(char **args)
             execute(pipPointer + 1);
             exit(0);
         }
-        DuplicateFD = dup(1);
-        dup2(pipeFD[1], 1);
+
+
+
+        DuplicateFD = dup(STDOUT_FILENO);
+        dup2(pipeFD[1], STDOUT_FILENO);
     }
+    // if (pipPointer != NULL)
+    // {
+    //     //https://man7.org/linux/man-pages/man2/pipe.2.html
+    //     pipe_num = 1;
+    //     *pipPointer = NULL;
+    //     pipe(pipeFD);
+    //     cpid = fork();
+    //     if (cpid == -1) {
+    //            perror("fork");
+    //            exit(EXIT_FAILURE);
+    //        }
+    //     if (cpid == 0)
+    //     {
+    //         close(pipeFD[1]);
+    //         close(0);
+    //         dup(pipeFD[0]);
+    //         execute(pipPointer + 1);
+    //         // exit(0);
+    //     }
+    //     // else {            /* Parent writes argv[1] to pipe */
+    //     //        close(pipeFD[0]);          /* Close unused read end */
+    //     //     //    write(pipeFD[1], argv[1], strlen(argv[1]));
+    //     //     //    close(pipeFD[1]);          /* Reader will see EOF */
+    //     //     //    wait(NULL);                /* Wait for child */
+    //     //     //    exit(EXIT_SUCCESS);
+    //     //    }
+
+    //     DuplicateFD = dup(STDOUT_FILENO);
+    //     dup2(pipeFD[1], STDOUT_FILENO);
+    // }
 
 
     /* Is command empty */
@@ -271,6 +327,7 @@ int execute(char **args)
     {
         close(STDOUT_FILENO);
         dup(DuplicateFD);
+        close(pipeFD[1]);
         wait(NULL);
     }
 
@@ -372,37 +429,37 @@ int main()
         }
 
 
-        if (c == '\n' && enter==1)
-        {
-        split((char *)get_command(&commands, last_command));
-        // execute((char **)get_command(&commands, last_command));
-        status = change_status(argv);
-            // enter++;
-            if(enter==1)
-            {
-                enter=0;
-                char currentCodeLine[1024]; 
-                fgets(currentCodeLine, 1024, stdin);
-                char* commandcurr = "bash";
-                char* argument_list[] = {"bash", "-c", currentCodeLine, NULL};
-                if (fork() == 0) {
-                    // Newly spawned child Process. This will be taken over by "bash"
-                    int status_code = execvp(commandcurr, argument_list);
-                    printf("bash has taken control of this child process. This won't execute unless it terminates abnormally!\n");
-                    if (status_code == -1) {
-                        printf("Terminated Incorrectly\n");
-                        return 1;
-                    }
-                }
+        // if (c == '\n' && enter==1)
+        // {
+        // split((char *)get_command(&commands, last_command));
+        // // execute((char **)get_command(&commands, last_command));
+        // status = change_status(argv);
+        //     // enter++;
+        //     if(enter==1)
+        //     {
+        //         enter=0;
+        //         char currentCodeLine[1024]; 
+        //         fgets(currentCodeLine, 1024, stdin);
+        //         char* commandcurr = "bash";
+        //         char* argument_list[] = {"bash", "-c", currentCodeLine, NULL};
+        //         if (fork() == 0) {
+        //             // Newly spawned child Process. This will be taken over by "bash"
+        //             int status_code = execvp(commandcurr, argument_list);
+        //             printf("bash has taken control of this child process. This won't execute unless it terminates abnormally!\n");
+        //             if (status_code == -1) {
+        //                 printf("Terminated Incorrectly\n");
+        //                 return 1;
+        //             }
+        //         }
                 
 
-            }
-            break;
-            //         printf("\n\n");
-            // wait(&status);
-            //             continue;
-        }
-        else if (c == '\n')
+        //     }
+        //     break;
+        //     //         printf("\n\n");
+        //     // wait(&status);
+        //     //             continue;
+        // }
+        if (c == '\n')
         {
         enter++;
         split((char *)get_command(&commands, last_command));
