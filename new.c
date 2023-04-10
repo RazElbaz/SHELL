@@ -30,6 +30,7 @@ int pipeFD[2];
 pid_t cpid;
 char *token;
 char *new_command;
+char* new_command2;
 char current_command[1024]; 
 char* end_if="fi\n";
 
@@ -352,14 +353,16 @@ int main()
                 {
                     last_command--;
                 }
-                prevCommand=(char *)get_command(&commands, last_command);
-                printf("\b");
-                printf("\b");
-                printf("\b");
                 
-                // printf("%s", (char *)get_command(&commands, last_command));
-                printf("%s %s %d", (char *)get_command(&commands, last_command),prevCommand,last_command);
+                printf("\b");
+                printf("\b");
+                printf("\b");
+                prevCommand=(char *)get_command(&commands, last_command);
+                printf("%s", (char *)get_command(&commands, last_command));
 
+                // printf("%s %s %d", (char *)get_command(&commands, last_command),prevCommand,last_command);
+// printf("\n %ld\n",strlen(prevCommand));
+// printf("\n %sn",strlen(prevCommand));
                 break;
 			case 'B':
                 if (commands.size==0 ||last_command >= commands.size-1 )
@@ -374,13 +377,14 @@ int main()
                 {
                     last_command++;
                 }
-                prevCommand=(char *)get_command(&commands, last_command);
+                
                 printf("\b");
                 printf("\b");
                 printf("\b");
                 // prevCommand=(char *)get_command(&commands, last_command);
-                
-                printf("%s %s %d", (char *)get_command(&commands, last_command),prevCommand,last_command);
+                prevCommand=(char *)get_command(&commands, last_command);
+                // printf("%s ", (char *)get_command(&commands, last_command));
+                // printf("\n %ld\n",strlen(prevCommand));
                 break;
 
     		}
@@ -390,13 +394,14 @@ int main()
 
         else if (c == '\n')
         {
-
+        
+        new_command2= malloc(sizeof(char) * strlen(prevCommand));
+        strcpy(new_command2, prevCommand);
+        
         split((char *)get_command(&commands, last_command));
-        // command[strlen(command) ] = '\0';
+        // prevCommand[strlen(prevCommand)-1 ] = '\0';
         status = change_status(argv);
-        new_command= malloc(sizeof(char) * strlen(prevCommand)+1);
-        strcpy(new_command, prevCommand);
-        add(&commands, new_command);
+        add(&commands, new_command2);
         last_command = commands.size;
         continue;
         }
@@ -441,7 +446,7 @@ int main()
 
         if (strcmp(command, "!!")){
             command[strlen(command) - 1] = '\0';
-strcpy(lastCommand, command);
+            strcpy(lastCommand, command);
         }
             
         
