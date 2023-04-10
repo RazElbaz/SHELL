@@ -19,6 +19,6 @@ typedef struct List
 } List;
 
 void add(List *list, void *data);
-// void sort(List *list);
+void sort(List *list);
 void printList(List *list);
 void *get_command(List *list, int index);
