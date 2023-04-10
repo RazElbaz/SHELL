@@ -19,11 +19,17 @@ char command[1024],lastCommand[1024], currentCommand[1024],prompt[1024];
 int DuplicateFD, mainProcess,status = 0;
 int change_status(char **args);
 List variables,commands;
-pid_t ProccesID = -1;
-int last_command=0;
+pid_t ProccesID;
+int last_command,fd, amper, rv ,piping , i;
 char *argv[1024];
 char *outfile;
 int enter=0;
+char c;
+char **pipPointer; 
+    int pipeFD[2];
+    pid_t cpid;
+        char *token;
+    char *new_command;
 
 ///////////////////////////couters//////////////////////////////////////
 char **CountPIPE(char **args)
@@ -94,13 +100,14 @@ void split(char *command)
 ////https://man7.org/linux/man-pages/man2/pipe.2.html-> pipe
 int execute(char **args)
 {
-    int fd, amper, rv = -1,pipe_num = 0, i = CountARGS(args);
+    rv = -1;
+    piping  = 0;
+    i = CountARGS(args);
     char **pipPointer = CountPIPE(args); 
-    int pipeFD[2];
-    pid_t cpid;
+
     if (pipPointer != NULL)
     {
-        pipe_num = 1;
+        piping  = 1;
         *pipPointer = NULL;
         pipe(pipeFD);
         cpid = fork();
@@ -111,17 +118,16 @@ int execute(char **args)
         }
         if (cpid == 0)
         {
-            close(pipeFD[1]);
+            close(pipeFD[1]); // Reader will see EOF 
             close(0);
-            dup(pipeFD[0]);
+            dup(pipeFD[0]); //Duplicate FD, returning a new file descriptor on the same file
             execute(pipPointer + 1);
             exit(0);
         }
 
+        DuplicateFD = dup(STDOUT_FILENO); //Duplicate FD, returning a new file descriptor on the same file.
+        dup2(pipeFD[1], STDOUT_FILENO); //Duplicate FD to FD2, closing FD2 and making it open on the same file.
 
-
-        DuplicateFD = dup(STDOUT_FILENO);
-        dup2(pipeFD[1], STDOUT_FILENO);
     }
     // if (pipPointer != NULL)
     // {
@@ -145,7 +151,7 @@ int execute(char **args)
     //     // else {            /* Parent writes argv[1] to pipe */
     //     //        close(pipeFD[0]);          /* Close unused read end */
     //     //     //    write(pipeFD[1], argv[1], strlen(argv[1]));
-    //     //     //    close(pipeFD[1]);          /* Reader will see EOF */
+    //     //     //    close(pipeFD[1]);         
     //     //     //    wait(NULL);                /* Wait for child */
     //     //     //    exit(EXIT_SUCCESS);
     //     //    }
@@ -319,12 +325,12 @@ int execute(char **args)
     /* parent continues here */
     if (amper == 0)
     {
-        wait(&status);
-        rv = status;
         ProccesID = -1;
+        wait(&status);
+        rv = status;  
     }
 
-    if (pipe_num)
+    if (piping)
     {
         close(STDOUT_FILENO);
         dup(DuplicateFD);
@@ -370,17 +376,36 @@ int main()
     mainProcess = getpid();
     signal(SIGINT, termination_handler); //SIGINT  interrupt from keyboard (ctrl-c)
     strcpy(prompt, "hello: ");
-    char *token;
-    char *new_command;
-    char c;
-    int last_command=0;
+    last_command=0;
+    enter=0;
+    // //https://stackoverflow.com/questions/39089086/how-to-make-program-not-wait-for-input
+    //         // define a terminal configuration data structure
+    //     struct termios term;
+
+    //     // copy the stdin terminal configuration into term
+    //     tcgetattr( fileno(stdin), &term );
+
+    //     // turn off Canonical processing in term
+    //     term.c_lflag &= ~ICANON;
+
+    //     // set the terminal configuration for stdin according to term, now
+    //     tcsetattr( fileno(stdin), TCSANOW, &term);
+
+
     while (1)
     {
         printf("%s", prompt);
         c=getchar();
         if (c == '\033')
 		{
-			//these two strange prints are from:
+    //                 struct termios originalTermios, newTermios;
+    // tcgetattr(STDIN_FILENO, &originalTermios);
+    // newTermios = originalTermios;
+    // newTermios.c_lflag &= ~(ICANON | ECHO);
+    // tcsetattr(STDIN_FILENO, TCSANOW, &newTermios);
+        
+
+
 			//https://itnext.io/overwrite-previously-printed-lines-4218a9563527
 			//and they delete the previous line
 			printf("\033[1A");//line up
@@ -409,6 +434,9 @@ int main()
                 printf("before %d \n", commands.size);
                 if (commands.size==0 ||last_command >= commands.size-1 )
                 {
+                    if(last_command == commands.size-1){
+                        last_command++;
+                    }
                     break;
                 }
                 else if (last_command < commands.size)
@@ -465,17 +493,19 @@ int main()
         // }
         else if (c == '\n')
         {
-        enter++;
+            printf("\n");
+        enter=enter+1;
         split((char *)get_command(&commands, last_command));
         // execute((char **)get_command(&commands, last_command));
         status = change_status(argv);
         command[0]=c;
         fgets(command+3 ,1021, stdin);
-        if (enter==2)
+        if (enter==1)
         {
-            enter=0;
             printf("%d",enter);
-            continue;
+            enter=0;
+            char* argument_list[] = {command, "\n\n",NULL};
+            execvp(command, argument_list);
         }
         
         }
