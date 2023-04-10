@@ -24,12 +24,12 @@ int last_command,fd, amper, rv ,piping , i;
 char *argv[1024];
 char *outfile;
 int enter=0;
-char c;
+char a,b,c;
 char **pipPointer; 
-    int pipeFD[2];
-    pid_t cpid;
-        char *token;
-    char *new_command;
+int pipeFD[2];
+pid_t cpid;
+char *token;
+char *new_command;
 
 ///////////////////////////couters//////////////////////////////////////
 char **CountPIPE(char **args)
@@ -57,34 +57,15 @@ int CountARGS(char **args)
         CounterARGS++;
         cnt++;
     }
-
     return cnt;
 }
 
 ///////////////////////////////////////////Auxiliary functions//////////////////////////////////////
 
-// Function to implement `strcat()` function in C
-//https://developers.redhat.com/blog/2019/08/12/efficient-string-copying-and-concatenation-in-c#attempts_to_overcome_limitations
-char *MYstrcat(const char *destination, const char *source)
-{
-    size_t size_destination = strlen(destination);
-    size_t size_source = strlen(source);
-    char *new_str = malloc(size_destination + size_source);
-    if (!new_str)
-        return NULL;
-    memcpy(new_str, destination, size_destination);
-    printf("%ld %ld ", size_destination , size_source);
-    memcpy(new_str + size_destination, source, size_source);
-    new_str[size_destination+size_source]='\0';
-    return new_str;
-}
-
-
 void split(char *command)
 {
     char *token = strtok(command, " ");
     int i = 0;
-
     while (token != NULL)
     {
         argv[i] = token;
@@ -93,7 +74,6 @@ void split(char *command)
     }
     argv[i] = NULL;
 }
-
 
 ////////////////////////////////////////////////////////////////////////////////////////
 //https://stackoverflow.com/questions/43295721/how-to-duplicate-a-child-descriptor-onto-stdout-fileno-and-stderr-fileno ->  fd
@@ -129,37 +109,6 @@ int execute(char **args)
         dup2(pipeFD[1], STDOUT_FILENO); //Duplicate FD to FD2, closing FD2 and making it open on the same file.
 
     }
-    // if (pipPointer != NULL)
-    // {
-    //     //https://man7.org/linux/man-pages/man2/pipe.2.html
-    //     pipe_num = 1;
-    //     *pipPointer = NULL;
-    //     pipe(pipeFD);
-    //     cpid = fork();
-    //     if (cpid == -1) {
-    //            perror("fork");
-    //            exit(EXIT_FAILURE);
-    //        }
-    //     if (cpid == 0)
-    //     {
-    //         close(pipeFD[1]);
-    //         close(0);
-    //         dup(pipeFD[0]);
-    //         execute(pipPointer + 1);
-    //         // exit(0);
-    //     }
-    //     // else {            /* Parent writes argv[1] to pipe */
-    //     //        close(pipeFD[0]);          /* Close unused read end */
-    //     //     //    write(pipeFD[1], argv[1], strlen(argv[1]));
-    //     //     //    close(pipeFD[1]);         
-    //     //     //    wait(NULL);                /* Wait for child */
-    //     //     //    exit(EXIT_SUCCESS);
-    //     //    }
-
-    //     DuplicateFD = dup(STDOUT_FILENO);
-    //     dup2(pipeFD[1], STDOUT_FILENO);
-    // }
-
 
     /* Is command empty */
     if (args[0] == NULL)
@@ -261,10 +210,8 @@ int execute(char **args)
         return 0;
     }
 
-
     else
         amper = 0;
-
     int redirect = -1;
     if (i >= 2 && (!strcmp(argv[i - 2], ">") || !strcmp(argv[i - 2], ">>")))
     {
@@ -312,7 +259,6 @@ int execute(char **args)
             {
                 fd = open(outfile, O_RDONLY);
             }
-
             close(redirect);
             dup(fd);
             close(fd);
@@ -337,7 +283,6 @@ int execute(char **args)
         close(pipeFD[1]);
         wait(NULL);
     }
-
     return rv;
 }
 
@@ -377,19 +322,12 @@ int main()
     signal(SIGINT, termination_handler); //SIGINT  interrupt from keyboard (ctrl-c)
     strcpy(prompt, "hello: ");
     last_command=0;
-    enter=0;
-    // new_command= malloc(sizeof(char) * strlen(""));
-    //     strcpy(new_command, "");
-    //     add(&commands, new_command);
-    //     last_command = commands.size;
-
-
-    char a,b;
+    
     int j=0;
             struct termios originalTermios, newTermios;
         tcgetattr(STDIN_FILENO, &originalTermios);
         newTermios = originalTermios;
-        newTermios.c_lflag &= ~(ICANON);
+        newTermios.c_lflag &= ( ECHOE | ~ICANON);
         tcsetattr(STDIN_FILENO, TCSANOW, &newTermios);
     while (1)
     {
@@ -469,7 +407,7 @@ int main()
 
     		}
             // printf("\n");
-        command[0]=c;
+        // command[0]=c;
         // command[1]=a;
         // command[2]=b;
         // fgets(command+1 ,1024, stdin);
@@ -481,10 +419,12 @@ int main()
         
         enter=enter+1;
         split((char *)get_command(&commands, last_command));
+        
         // execute((char **)get_command(&commands, last_command)); //bad
         status = change_status(argv);
         command[0]=c;
-        fgets(command+1 ,1023, stdin);
+        // fgets(command+1 ,1023, stdin);
+        //  getchar();
         // printf("\n");
         // if (enter==1)
         // {
@@ -505,7 +445,7 @@ int main()
         // putchar(b);
         // command[2]=b;
         fgets(command+1 ,1023, stdin);
-        
+        command[strlen(command)-1] = '\n';
         
         }
 
@@ -513,7 +453,6 @@ int main()
     char* end_if="fi\n";
     //https://www.digitalocean.com/community/tutorials/execvp-function-c-plus-plus
     if (!strncmp(command, "if", 2)) {
-        command[strlen(command)-1] = '\n';
         while (1) {
             fgets(current_command, 1024, stdin);
             strcat(command, current_command);
