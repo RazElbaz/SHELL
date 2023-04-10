@@ -423,10 +423,13 @@ int main()
                 break;
 
     		}
+        command[0]=c;
+        fgets(command+3 ,1021, stdin);
         
         getchar();
         continue;
         }
+
 
 
         // if (c == '\n' && enter==1)
@@ -459,24 +462,30 @@ int main()
         //     // wait(&status);
         //     //             continue;
         // }
-        if (c == '\n')
+        else if (c == '\n')
         {
         enter++;
         split((char *)get_command(&commands, last_command));
         // execute((char **)get_command(&commands, last_command));
         status = change_status(argv);
+        command[0]=c;
+        fgets(command+3 ,1021, stdin);
         }
-    command[0]=c;
-    fgets(command+1 ,1023, stdin);
-    char currentCodeLine[1024]; 
+        else{
+        command[0]=c;
+        fgets(command+1 ,1023, stdin);
+        }
+
+    char current_command[1024]; 
+    char* end_if="fi\n";
     //https://www.digitalocean.com/community/tutorials/execvp-function-c-plus-plus
     if (!strncmp(command, "if", 2)) {
         command[strlen(command)-1] = '\n';
         while (1) {
-            fgets(currentCodeLine, 1024, stdin);
-            strcat(command, currentCodeLine);
+            fgets(current_command, 1024, stdin);
+            strcat(command, current_command);
             command[strlen(command) - 1] = '\n';
-            if (!strcmp(currentCodeLine, "fi\n"))
+            if (!strcmp(current_command, end_if))
                 break;
         }
         char* commandcurr = "bash";
