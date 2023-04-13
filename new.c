@@ -339,6 +339,7 @@ char *safe_strcpy(char *dest, size_t size, char *src) {
 }
 int main()
 {
+    
     mainProcess = getpid();
     signal(SIGINT, termination_handler); //SIGINT  interrupt from keyboard (ctrl-c)
     strcpy(prompt, "hello: ");
@@ -346,17 +347,44 @@ int main()
     char* prevCommand=malloc(sizeof(char) * 1024);
     int j=0;
             struct termios originalTermios, newTermios;
-        tcgetattr(STDIN_FILENO, &originalTermios);
-        newTermios = originalTermios;
-        newTermios.c_lflag &= ( ECHOE | ~ICANON);
-        tcsetattr(STDIN_FILENO, TCSANOW, &newTermios);
+
+            // Initialize termios structure to default values
+    if (tcgetattr(STDIN_FILENO, &originalTermios) == -1) {
+        perror("tcgetattr");
+        exit(EXIT_FAILURE);
+    }
+     // Modify the behavior of the Delete key
+
+        newTermios.c_lflag &= ( ECHOE | ~ICANON | VERASE);
+            newTermios.c_cc[VERASE] = 127; // Send Backspace (ASCII code 8) instead of Delete (ASCII code 127)
+            newTermios = originalTermios;
+        // Apply the new terminal attributes
+    if (tcsetattr(STDIN_FILENO, TCSANOW, &originalTermios) == -1) {
+        perror("tcsetattr");
+        exit(EXIT_FAILURE);
+    }
+
+        // tcsetattr(STDIN_FILENO, &newTermios);
+        
+        // tcgetattr(0, &newTermios);
+        // newTermios.c_cc[VERASE] = 0x08; 
+            // Restore the original terminal attributes before exiting
+    if (tcsetattr(STDIN_FILENO, TCSANOW, &newTermios) == -1) {
+        perror("tcsetattr");
+        exit(EXIT_FAILURE);
+    }
     while (1)
     {
         //http://www.java2s.com/Tutorial/C/0080__printf-scanf/bMovesthecursortothelastcolumnofthepreviousline.htm
         printf("\r");
         printf("%s", prompt);
         c=getchar();
-        if (c == '\033')
+        if(c== 127){
+                if(i<strlen(prompt+1)){
+                printf("\b\b  \b\b\b");
+                }
+        }
+        else if (c == '\033')
 		{
             printf("\33[2K");
 			a=getchar(); //skip the [
@@ -431,8 +459,29 @@ int main()
         }
         else{
         command[0]=c;
-        fgets(command+1 ,1023, stdin);
-        // command[strlen(command)-1] = '\n';
+        char str=0;
+        char b;
+        i=1;
+        while((b = getchar()) != '\n'){
+            
+            if(b == 127 || b=='\b'){
+                // if(i<strlen(prompt+1)){
+                
+                // }
+                printf("\b\b  \b\b\b");
+                command[i] = '\0';
+                i--;
+            }
+                
+            else {
+                command[i] = b; i++;
+             
+                };
+               
+        }
+
+        command[i] = b;
+        printf("\n%s\n",command);
         }
 
 
