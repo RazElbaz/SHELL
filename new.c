@@ -450,7 +450,7 @@ int main()
         else if (c == '\n')
         {
         
-        new_command2= malloc(sizeof(char) * strlen(prevCommand+4));
+        new_command2= malloc(sizeof(char) * strlen(prevCommand));
         prevCommand[strlen(prevCommand)]=' ';
         strcpy(new_command2, prevCommand);
         add(&commands, new_command2);
@@ -489,6 +489,8 @@ int main()
         }
         command[i] = b;
         // printf("\n%s\n",command);
+        i++;
+        command[i]='\0';
         }
 
 
