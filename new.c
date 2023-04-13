@@ -77,7 +77,28 @@ void split(char *command)
     }
     argv[i] = NULL;
 }
-
+//https://www.gnu.org/software/libc/manual/html_node/Basic-Signal-Handling.html
+void termination_handler(int signum)
+{
+    if (getpid() == mainProcess) {
+        printf("\n");
+        printf("You typed Control-C!");
+        printf("\n");
+        write(0, prompt, strlen(prompt)+1);
+        return;
+    }
+    else{
+        fprintf(stderr, "caught signal: %d\n", signum);
+        return;
+    }
+}
+char *safe_strcpy(char *dest, size_t size, char *src) {
+    if (size > 0) {
+        *dest = '\0';
+        return strncat(dest, src, size - 1);
+    }
+    return dest;
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////
 //https://stackoverflow.com/questions/43295721/how-to-duplicate-a-child-descriptor-onto-stdout-fileno-and-stderr-fileno ->  fd
@@ -126,9 +147,12 @@ int execute(char **args)
     }
     if (strcmp(args[0], "!!")==0)
     {
+        if(commands.size>0){
         strcpy(currentCommand, lastCommand);
         split(currentCommand);
         execute(argv);
+        }
+
         return 0;
     }
 
@@ -304,28 +328,7 @@ int change_status(char **args)
         return rv;
     }
 }
-//https://www.gnu.org/software/libc/manual/html_node/Basic-Signal-Handling.html
-void termination_handler(int signum)
-{
-    if (getpid() == mainProcess) {
-        printf("\n");
-        printf("You typed Control-C!");
-        printf("\n");
-        write(0, prompt, strlen(prompt)+1);
-        return;
-    }
-    else{
-        fprintf(stderr, "caught signal: %d\n", signum);
-        return;
-    }
-}
-char *safe_strcpy(char *dest, size_t size, char *src) {
-    if (size > 0) {
-        *dest = '\0';
-        return strncat(dest, src, size - 1);
-    }
-    return dest;
-}
+
 int main()
 {
     
@@ -339,33 +342,7 @@ int main()
         newTermios = originalTermios;
         newTermios.c_lflag &= ( ECHOE | ~ICANON);
         tcsetattr(STDIN_FILENO, TCSANOW, &newTermios);
-    // int j=0;
-    //         struct termios originalTermios, newTermios;
 
-    //         // Initialize termios structure to default values
-    // if (tcgetattr(STDIN_FILENO, &originalTermios) == -1) {
-    //     perror("tcgetattr");
-    //     exit(EXIT_FAILURE);
-    // }
-    //  // Modify the behavior of the Delete key
-    // newTermios.c_lflag &= ( ECHOE | ~ICANON | VERASE);
-    // newTermios.c_cc[VERASE] = 0x8; // Send Backspace (ASCII code 8) instead of Delete (ASCII code 127)
-    // newTermios = originalTermios;
-    // // Apply the new terminal attributes
-    // if (tcsetattr(STDIN_FILENO, TCSANOW, &originalTermios) == -1) {
-    //     perror("tcsetattr");
-    //     exit(EXIT_FAILURE);
-    // }
-
-    //     // tcsetattr(STDIN_FILENO, &newTermios);
-        
-    //     // tcgetattr(0, &newTermios);
-    //     // newTermios.c_cc[VERASE] = 0x08; 
-    //         // Restore the original terminal attributes before exiting
-    // if (tcsetattr(STDIN_FILENO, TCSANOW, &newTermios) == -1) {
-    //     perror("tcsetattr");
-    //     exit(EXIT_FAILURE);
-    // }
     while (1)
     {
         //http://www.java2s.com/Tutorial/C/0080__printf-scanf/bMovesthecursortothelastcolumnofthepreviousline.htm
@@ -407,7 +384,6 @@ int main()
                 {
                     if(last_command == commands.size-1){
                         last_command++;
-                        // continue;
                     }
                     break;
                 }
@@ -419,15 +395,9 @@ int main()
                 printf("\b");
                 printf("\b");
                 printf("\b");
-
                 printf("\b");
-                // printf("\r");
-                // prevCommand=(char *)get_command(&commands, last_command);
                 prevCommand=(char *)get_command(&commands, last_command);
                 printf("%s", (char *)get_command(&commands, last_command));
-                // printf("\r");
-                // printf("\033[999C"); // Move the cursor to the end of the line
-                // printf("prev: %s ",(prevCommand));
                 break;
 
     		}
@@ -443,15 +413,9 @@ int main()
         strcpy(new_command2, prevCommand);
         add(&commands, new_command2);
         last_command = commands.size;
-        // split2((char *)get_command(&commands, last_command-1));
-        // // //
-        // command[0]=c;
-        // fgets(command ,1023, stdin);
         strcpy(command, new_command2);
         split(command);
         status = change_status(argv);
-        // execute(command);
-        // printf("\n");
         continue;
         }
         else{
@@ -473,7 +437,7 @@ int main()
                
         }
         command[i] = b;
-        printf("\n%ld\n",strlen(command));
+        // printf("\n%ld\n",strlen(command));
         i++;
         command[i]='\0';
         }
@@ -499,28 +463,23 @@ int main()
                 return 1;
             }
         }
-
             wait(&status);
             continue;
         }
+
         command[strlen(command) - 1] = '\0';
         if (!strcmp(command, "quit")){
             // if(command[strlen(command) - 1] != '\0')
             // command[strlen(command)-1] = '\0';
             exit(0);
         }
-            
-
+        
         if (strcmp(command, "!!")){
-            // if(command[strlen(command) - 1] != '\0')
-            // command[strlen(command) - 1] = '\0';
-            
             strcpy(lastCommand, command);
             // printf("%s",lastCommand);
         }
-            
-        
-        new_command= malloc(sizeof(char) * strlen(command));
+
+        new_command= malloc(sizeof(char)*strlen(command));
         strcpy(new_command, command);
         add(&commands, new_command);
         last_command = commands.size;
