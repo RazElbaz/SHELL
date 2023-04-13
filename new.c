@@ -345,33 +345,38 @@ int main()
     strcpy(prompt, "hello: ");
     last_command=0;
     char* prevCommand=malloc(sizeof(char) * 1024);
-    int j=0;
-            struct termios originalTermios, newTermios;
+                struct termios originalTermios, newTermios;
+        tcgetattr(STDIN_FILENO, &originalTermios);
+        newTermios = originalTermios;
+        newTermios.c_lflag &= ( ECHOE | ~ICANON);
+        tcsetattr(STDIN_FILENO, TCSANOW, &newTermios);
+    // int j=0;
+    //         struct termios originalTermios, newTermios;
 
-            // Initialize termios structure to default values
-    if (tcgetattr(STDIN_FILENO, &originalTermios) == -1) {
-        perror("tcgetattr");
-        exit(EXIT_FAILURE);
-    }
-     // Modify the behavior of the Delete key
-    newTermios.c_lflag &= ( ECHOE | ~ICANON | VERASE);
-    newTermios.c_cc[VERASE] = 0x8; // Send Backspace (ASCII code 8) instead of Delete (ASCII code 127)
-    newTermios = originalTermios;
-    // Apply the new terminal attributes
-    if (tcsetattr(STDIN_FILENO, TCSANOW, &originalTermios) == -1) {
-        perror("tcsetattr");
-        exit(EXIT_FAILURE);
-    }
+    //         // Initialize termios structure to default values
+    // if (tcgetattr(STDIN_FILENO, &originalTermios) == -1) {
+    //     perror("tcgetattr");
+    //     exit(EXIT_FAILURE);
+    // }
+    //  // Modify the behavior of the Delete key
+    // newTermios.c_lflag &= ( ECHOE | ~ICANON | VERASE);
+    // newTermios.c_cc[VERASE] = 0x8; // Send Backspace (ASCII code 8) instead of Delete (ASCII code 127)
+    // newTermios = originalTermios;
+    // // Apply the new terminal attributes
+    // if (tcsetattr(STDIN_FILENO, TCSANOW, &originalTermios) == -1) {
+    //     perror("tcsetattr");
+    //     exit(EXIT_FAILURE);
+    // }
 
-        // tcsetattr(STDIN_FILENO, &newTermios);
+    //     // tcsetattr(STDIN_FILENO, &newTermios);
         
-        // tcgetattr(0, &newTermios);
-        // newTermios.c_cc[VERASE] = 0x08; 
-            // Restore the original terminal attributes before exiting
-    if (tcsetattr(STDIN_FILENO, TCSANOW, &newTermios) == -1) {
-        perror("tcsetattr");
-        exit(EXIT_FAILURE);
-    }
+    //     // tcgetattr(0, &newTermios);
+    //     // newTermios.c_cc[VERASE] = 0x08; 
+    //         // Restore the original terminal attributes before exiting
+    // if (tcsetattr(STDIN_FILENO, TCSANOW, &newTermios) == -1) {
+    //     perror("tcsetattr");
+    //     exit(EXIT_FAILURE);
+    // }
     while (1)
     {
         //http://www.java2s.com/Tutorial/C/0080__printf-scanf/bMovesthecursortothelastcolumnofthepreviousline.htm
@@ -403,16 +408,10 @@ int main()
                 printf("\b");
                 printf("\b");
                 printf("\b");
-                
-                // printf("\r");
+            
                 prevCommand=(char *)get_command(&commands, last_command);
                 printf("%s", (char *)get_command(&commands, last_command));
-                // printf("\033[999C"); // Move the cursor to the end of the line
-                
 
-                // printf("%s %s %d", (char *)get_command(&commands, last_command),prevCommand,last_command);
-// // printf("\n %ld\n",strlen(prevCommand));
-// printf(" prev: %s",(prevCommand));
                 break;
 			case 'B':
                 if (commands.size==0 ||last_command >= commands.size-1 )
@@ -473,9 +472,6 @@ int main()
         i=1;
         while((b = getchar()) != '\n'){
             if(b == 127 || b=='\b'){
-                // if(i<strlen(prompt+1)){
-                
-                // }
                 printf("\b\b\b   \b\b\b");
                 command[i] = '\0';
                 i--;
@@ -488,7 +484,7 @@ int main()
                
         }
         command[i] = b;
-        // printf("\n%s\n",command);
+        // printf("\n%ld\n",strlen(command));
         i++;
         command[i]='\0';
         }
@@ -520,12 +516,14 @@ int main()
         }
         
         if (!strcmp(command, "quit")){
+            // if(command[strlen(command) - 1] != '\0')
             command[strlen(command) - 1] = '\0';
             exit(0);
         }
             
 
         if (strcmp(command, "!!")){
+            // if(command[strlen(command) - 1] != '\0')
             command[strlen(command) - 1] = '\0';
             strcpy(lastCommand, command);
         }
