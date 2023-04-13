@@ -77,18 +77,7 @@ void split(char *command)
     }
     argv[i] = NULL;
 }
-void split2(char *command)
-{
-    char *token = strtok(command, " ");
-    int i = 0;
-    while (token != NULL)
-    {
-        argv[i] = token;
-        token = strtok(NULL, " ");
-        i++;
-    }
-    argv[i] = NULL;
-}
+
 
 ////////////////////////////////////////////////////////////////////////////////////////
 //https://stackoverflow.com/questions/43295721/how-to-duplicate-a-child-descriptor-onto-stdout-fileno-and-stderr-fileno ->  fd
@@ -484,7 +473,7 @@ int main()
                
         }
         command[i] = b;
-        // printf("\n%ld\n",strlen(command));
+        printf("\n%ld\n",strlen(command));
         i++;
         command[i]='\0';
         }
@@ -514,18 +503,20 @@ int main()
             wait(&status);
             continue;
         }
-        
+        command[strlen(command) - 1] = '\0';
         if (!strcmp(command, "quit")){
             // if(command[strlen(command) - 1] != '\0')
-            command[strlen(command) - 1] = '\0';
+            // command[strlen(command)-1] = '\0';
             exit(0);
         }
             
 
         if (strcmp(command, "!!")){
             // if(command[strlen(command) - 1] != '\0')
-            command[strlen(command) - 1] = '\0';
+            // command[strlen(command) - 1] = '\0';
+            
             strcpy(lastCommand, command);
+            // printf("%s",lastCommand);
         }
             
         
