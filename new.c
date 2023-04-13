@@ -488,7 +488,7 @@ int main()
                
         }
         command[i] = b;
-        printf("\n%s\n",command);
+        // printf("\n%s\n",command);
         }
 
 
