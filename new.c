@@ -354,11 +354,10 @@ int main()
         exit(EXIT_FAILURE);
     }
      // Modify the behavior of the Delete key
-
-        newTermios.c_lflag &= ( ECHOE | ~ICANON | VERASE);
-            newTermios.c_cc[VERASE] = 127; // Send Backspace (ASCII code 8) instead of Delete (ASCII code 127)
-            newTermios = originalTermios;
-        // Apply the new terminal attributes
+    newTermios.c_lflag &= ( ECHOE | ~ICANON | VERASE);
+    newTermios.c_cc[VERASE] = 0x8; // Send Backspace (ASCII code 8) instead of Delete (ASCII code 127)
+    newTermios = originalTermios;
+    // Apply the new terminal attributes
     if (tcsetattr(STDIN_FILENO, TCSANOW, &originalTermios) == -1) {
         perror("tcsetattr");
         exit(EXIT_FAILURE);
@@ -381,7 +380,7 @@ int main()
         c=getchar();
         if(c== 127){
                 if(i<strlen(prompt+1)){
-                printf("\b\b  \b\b\b");
+                printf("\b\b\b   \b\b\b");
                 }
         }
         else if (c == '\033')
@@ -403,8 +402,13 @@ int main()
                 printf("\b");
                 printf("\b");
                 printf("\b");
+                printf("\b");
+                
+                // printf("\r");
                 prevCommand=(char *)get_command(&commands, last_command);
                 printf("%s", (char *)get_command(&commands, last_command));
+                // printf("\033[999C"); // Move the cursor to the end of the line
+                
 
                 // printf("%s %s %d", (char *)get_command(&commands, last_command),prevCommand,last_command);
 // // printf("\n %ld\n",strlen(prevCommand));
@@ -427,9 +431,14 @@ int main()
                 printf("\b");
                 printf("\b");
                 printf("\b");
+
+                printf("\b");
+                // printf("\r");
                 // prevCommand=(char *)get_command(&commands, last_command);
                 prevCommand=(char *)get_command(&commands, last_command);
                 printf("%s", (char *)get_command(&commands, last_command));
+                // printf("\r");
+                // printf("\033[999C"); // Move the cursor to the end of the line
                 // printf("prev: %s ",(prevCommand));
                 break;
 
@@ -463,12 +472,11 @@ int main()
         char b;
         i=1;
         while((b = getchar()) != '\n'){
-            
             if(b == 127 || b=='\b'){
                 // if(i<strlen(prompt+1)){
                 
                 // }
-                printf("\b\b  \b\b\b");
+                printf("\b\b\b   \b\b\b");
                 command[i] = '\0';
                 i--;
             }
@@ -479,7 +487,6 @@ int main()
                 };
                
         }
-
         command[i] = b;
         printf("\n%s\n",command);
         }
