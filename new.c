@@ -77,6 +77,18 @@ void split(char *command)
     }
     argv[i] = NULL;
 }
+void split2(char *command)
+{
+    char *token = strtok(command, " ");
+    int i = 0;
+    while (token != NULL)
+    {
+        argv[i] = token;
+        token = strtok(NULL, " ");
+        i++;
+    }
+    argv[i] = NULL;
+}
 
 ////////////////////////////////////////////////////////////////////////////////////////
 //https://stackoverflow.com/questions/43295721/how-to-duplicate-a-child-descriptor-onto-stdout-fileno-and-stderr-fileno ->  fd
@@ -318,14 +330,20 @@ void termination_handler(int signum)
         return;
     }
 }
-
+char *safe_strcpy(char *dest, size_t size, char *src) {
+    if (size > 0) {
+        *dest = '\0';
+        return strncat(dest, src, size - 1);
+    }
+    return dest;
+}
 int main()
 {
     mainProcess = getpid();
     signal(SIGINT, termination_handler); //SIGINT  interrupt from keyboard (ctrl-c)
     strcpy(prompt, "hello: ");
     last_command=0;
-    char* prevCommand=malloc(sizeof(char) * strlen(command));
+    char* prevCommand=malloc(sizeof(char) * 1024);
     int j=0;
             struct termios originalTermios, newTermios;
         tcgetattr(STDIN_FILENO, &originalTermios);
@@ -361,8 +379,8 @@ int main()
                 printf("%s", (char *)get_command(&commands, last_command));
 
                 // printf("%s %s %d", (char *)get_command(&commands, last_command),prevCommand,last_command);
-// printf("\n %ld\n",strlen(prevCommand));
-// printf("\n %sn",strlen(prevCommand));
+// // printf("\n %ld\n",strlen(prevCommand));
+// printf(" prev: %s",(prevCommand));
                 break;
 			case 'B':
                 if (commands.size==0 ||last_command >= commands.size-1 )
@@ -383,8 +401,8 @@ int main()
                 printf("\b");
                 // prevCommand=(char *)get_command(&commands, last_command);
                 prevCommand=(char *)get_command(&commands, last_command);
-                // printf("%s ", (char *)get_command(&commands, last_command));
-                // printf("\n %ld\n",strlen(prevCommand));
+                printf("%s", (char *)get_command(&commands, last_command));
+                // printf("prev: %s ",(prevCommand));
                 break;
 
     		}
@@ -395,14 +413,20 @@ int main()
         else if (c == '\n')
         {
         
-        new_command2= malloc(sizeof(char) * strlen(prevCommand));
+        new_command2= malloc(sizeof(char) * strlen(prevCommand+4));
+        prevCommand[strlen(prevCommand)]=' ';
         strcpy(new_command2, prevCommand);
-        
-        split((char *)get_command(&commands, last_command));
-        // prevCommand[strlen(prevCommand)-1 ] = '\0';
-        status = change_status(argv);
         add(&commands, new_command2);
         last_command = commands.size;
+        // split2((char *)get_command(&commands, last_command-1));
+        // // //
+        // command[0]=c;
+        // fgets(command ,1023, stdin);
+        strcpy(command, new_command2);
+        split(command);
+        status = change_status(argv);
+        // execute(command);
+        // printf("\n");
         continue;
         }
         else{
@@ -410,8 +434,7 @@ int main()
         fgets(command+1 ,1023, stdin);
         // command[strlen(command)-1] = '\n';
         }
-        printf("%d",last_command);
-            printf("%d",commands.size);
+
 
     //https://www.digitalocean.com/community/tutorials/execvp-function-c-plus-plus
     if (!strncmp(command, "if", 2)) {
