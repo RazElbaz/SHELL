@@ -88,7 +88,7 @@ void termination_handler(int signum)
         return;
     }
     else{
-        fprintf(stderr, "caught signal: %d\n", signum);
+        fprintf(stderr, "\ncaught signal: %d\n", signum);
         return;
     }
 }
@@ -99,7 +99,15 @@ char *safe_strcpy(char *dest, size_t size, char *src) {
     }
     return dest;
 }
-
+int first_index_in_str(char* arr){
+    int j;
+        for (j = 0; i < 1024; i++) {
+        if (strlen(arr) <= i) {
+            break;
+        }
+    }
+    return j;
+}
 ////////////////////////////////////////////////////////////////////////////////////////
 //https://stackoverflow.com/questions/43295721/how-to-duplicate-a-child-descriptor-onto-stdout-fileno-and-stderr-fileno ->  fd
 ////https://man7.org/linux/man-pages/man2/pipe.2.html-> pipe
@@ -331,15 +339,7 @@ int change_status(char **args)
         return rv;
     }
 }
-int index1(char* arr){
-    int j;
-        for (j = 0; i < 1024; i++) {
-        if (strlen(arr) <= i) {
-            break;
-        }
-    }
-    return j;
-}
+
 int main()
 {
     
@@ -361,10 +361,11 @@ int main()
         //http://www.java2s.com/Tutorial/C/0080__printf-scanf/bMovesthecursortothelastcolumnofthepreviousline.htm
         printf("\r");
         printf("%s", prompt);
+        i=1;
         c=getchar();
-        if(c== 127){
-                if(i<strlen(prompt+1)){
-                printf("\b\b\b   \b\b\b");
+        if(c== 127 || c == '\b'){
+                if(i<strlen(prompt)){
+                printf("\b\b\b   \b");
                 }
                 continue;
         }
@@ -422,6 +423,7 @@ int main()
         else if (c == '\n')
         {
         tcsetattr(STDIN_FILENO, TCSANOW, &old_terminal);
+        if(commands.size>0){
         prevCommand=(char *)get_command(&commands, last_command);
         new_command2= malloc(sizeof(char) * strlen(prevCommand));
         prevCommand[strlen(prevCommand)]=' ';
@@ -431,6 +433,7 @@ int main()
         strcpy(command, new_command2);
         split(command);
         status = change_status(argv);
+        }
         continue;
         }
         else{
@@ -459,27 +462,16 @@ int main()
                
         }
         command[i] = b;
-        // printf("\n%ld\n",strlen(command));
-        // printf("\n %ld %s\n",strlen(command),(command));
-        // printf("\n%ld\n",index1(command));
-        // printf("\n%c\n",(strlen(command)));
-        // printf("\n%ld\n",strlen(command));
-        // int t=0;
-        // char curr[50];
-        // for(t ; t<46 ; t++){
-        //     curr[t]=command[t];
-        // }
-        // printf("\n%s\n",(curr));
         i++;
         command[strlen(command)]='\0';
         i=1;
-        
         }
         
 
-
+    int flag=0;
     //https://www.digitalocean.com/community/tutorials/execvp-function-c-plus-plus
     if (!strncmp(command, "if", 2)) {
+        flag=1;
         while (1) {
             fgets(current_command, 1024, stdin);
             strcat(command, current_command);
@@ -499,17 +491,22 @@ int main()
             }
         }
             wait(&status);
-            continue;
+            strcat(command, current_command);
+            // strcat(command, current_command);
+            // continue;
         }
 
         command[strlen(command) - 1] = '\0';
         if (!strcmp(command, "quit")){
+            // tcsetattr(STDIN_FILENO, TCSANOW, &old_terminal);
             // if(command[strlen(command) - 1] != '\0')
             // command[strlen(command)-1] = '\0';
             exit(0);
         }
         
         if (strcmp(command, "!!")){
+            tcsetattr(STDIN_FILENO, TCSANOW, &old_terminal);
+            
             strcpy(lastCommand, command);
             // printf("%s",lastCommand);
         }
@@ -518,7 +515,13 @@ int main()
         strcpy(new_command, command);
         add(&commands, new_command);
         last_command = commands.size;
+        if(!flag){
         split(command);
         status = change_status(argv);
+        }
+        else{
+            continue;
+        }
+        
         }
     }
