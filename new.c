@@ -25,7 +25,7 @@ char *argv[1024];
 char *outfile;
 int enter=0;
 char a,b,c;
-char **pipPointer; 
+char **CountPIPEPointer; 
 int pipeFD[2];
 pid_t cpid;
 char *token;
@@ -108,6 +108,8 @@ int first_index_in_str(char* arr){
     }
     return j;
 }
+
+
 ////////////////////////////////////////////////////////////////////////////////////////
 //https://stackoverflow.com/questions/43295721/how-to-duplicate-a-child-descriptor-onto-stdout-fileno-and-stderr-fileno ->  fd
 ////https://man7.org/linux/man-pages/man2/pipe.2.html-> pipe
@@ -116,12 +118,12 @@ int execute(char **args)
     rv = -1;
     piping  = 0;
     i = CountARGS(args);
-    char **pipPointer = CountPIPE(args); 
+    char **CountPIPEPointer = CountPIPE(args); 
 
-    if (pipPointer != NULL)
+    if (CountPIPEPointer != NULL)
     {
         piping  = 1;
-        *pipPointer = NULL;
+        *CountPIPEPointer = NULL;
         pipe(pipeFD);
         cpid = fork();
         if (cpid == -1)
@@ -134,7 +136,7 @@ int execute(char **args)
             close(pipeFD[1]); // Reader will see EOF 
             close(0);
             dup(pipeFD[0]); //Duplicate FD, returning a new file descriptor on the same file
-            execute(pipPointer + 1);
+            execute(CountPIPEPointer + 1);
             exit(0);
         }
 
