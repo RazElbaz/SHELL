@@ -153,7 +153,11 @@ int execute(char **args)
  https://man7.org/linux/man-pages/man2/pipe.2.html-> pipe
  */
     rv = -1; piping  = 0; i = CountARGS(args); char **CountPIPEPointer = CountPIPE(args); 
-
+    /*
+    Task number: 9
+Option to chain several commands in a pipe.
+For each command in pipe a dynamic allocation of argv is needed
+    */
     if (CountPIPEPointer != NULL)
     {
         piping  = 1;
@@ -189,6 +193,13 @@ int execute(char **args)
         amper = 1;
         args[i - 1] = NULL;
     }
+    /* 
+    Task number:  6
+    A command that repeats the last command:
+    hello: !!
+    (two exclamation marks in the first word of the command)
+    * I concluded that this was the last command typed in the terminal
+    */
     if (strcmp(args[0], "!!")==0)
     {
         if(commands.size>0){
@@ -202,7 +213,15 @@ int execute(char **args)
 
         return 0;
     }
-
+    /*
+    Task number: 10
+    Adding variables to the shell:
+    hello: $person = David
+    hello: echo person
+    person
+    hello: echo $person
+    David
+    */
     if (args[0][0] == '$' && i > 2)
     {
         Var *var = (Var *)malloc(sizeof(Var));
@@ -213,7 +232,16 @@ int execute(char **args)
         add(&variables, var);
         return 0;
     }
-
+    /*
+    Task number: 11
+    read command:
+    hello: echo Enter a string
+    read name
+    Hello
+    echo $name
+    Hello
+    Save a variable as $
+    */
     if(strcmp(args[0], "read")==0)
     {
         Var *var = (Var *)malloc(sizeof(Var));
@@ -227,7 +255,9 @@ int execute(char **args)
         add(&variables, var);
         return 0;
     }
+    /*
 
+    */
     if (strcmp(args[0], "cd")==0)
     {
         if (chdir(args[1]) != 0){ // chdir is a system call.
@@ -236,7 +266,12 @@ int execute(char **args)
     }
         return 0;
     }
-
+    /*
+    Task number: 2
+    Command to change the cursor:
+    hello : prompt = myprompt
+    (The command contains three words separated by two spaces)
+    */
     if (strcmp(args[0], "prompt")==0)
     {
          if (!strcmp(argv[1], "="))
@@ -250,6 +285,11 @@ int execute(char **args)
     if (strcmp(args[0], "echo")==0)
     {
         char **echo_var = args + 1;
+        /*
+        Task number: 4
+        The command: hello: echo $?
+        Print the status of the last command executed.
+        */
         if (strcmp(*echo_var, "$?")==0)
         {
             printf("%d\n", status);
@@ -258,8 +298,18 @@ int execute(char **args)
 
         while (*echo_var)
         {
+            
             if (*echo_var!=NULL && *echo_var[0] == '$')
             {
+                /*
+                Task number: 3
+                ---Part A of task number: 3---
+                echo command that prints the arguments:
+                hello: echo abc xyz
+                will print
+                abc xyz
+                Here is the search for the variable $var in the list of variables
+                */
                 Node *node = variables.head;
                 char *new_variable = NULL;
                 
@@ -276,6 +326,14 @@ int execute(char **args)
             }
 
             else{
+            /*
+            Task number: 3
+            ---Part B of task number: 3---
+            echo command that prints the arguments:
+            hello: echo abc xyz
+            will print
+            abc xyz
+            */
                 printf("%s ", *echo_var);
             }
 
@@ -288,6 +346,15 @@ int execute(char **args)
     else
         amper = 0;
     int redirect = -1;
+    /*
+    Task number: 1
+    Redirect writes to stderr
+    hello: ls –l nofile 2> mylog
+
+    Adding to an existing file by >>
+    hello: ls -l >> mylog
+    As in a normal shell program, if the file does not exist, it will be created.
+    */
     if (i >= 2 && (!strcmp(argv[i - 2], ">") || !strcmp(argv[i - 2], ">>")))
     {
         outfile = argv[i - 1];
@@ -307,6 +374,16 @@ int execute(char **args)
 
     /* for commands not part of the shell command language */ 
     ProccesID = fork();
+
+    /*
+    Continue task number: 1
+    Redirect writes to stderr
+    hello: ls –l nofile 2> mylog
+
+    Adding to an existing file by >>
+    hello: ls -l >> mylog
+    As in a normal shell program, if the file does not exist, it will be created.
+    */
     if (ProccesID == 0)
     {
         /* redirection of IO ? */
@@ -335,7 +412,7 @@ int execute(char **args)
                 fd = open(outfile, O_RDONLY);
             }
             close(redirect);
-            dup(fd);
+            dup(fd); //Duplicate FD, returning a new file descriptor on the same file.
             close(fd);
             args[i - 2] = NULL;
             // close(STDOUT_FILENO);
@@ -346,18 +423,55 @@ int execute(char **args)
     /* parent continues here */
     if (amper == 0)
     {
+        /**
+         * In C, the process ID -1 is a special value that represents an error condition. This value is typically used in system calls to indicate that the call failed, and the specific error code can be retrieved using the errno global variable.
+        */
         ProccesID = -1;
+        /**
+         * wait(&status) system call is used when the parent process needs to know the exit status of the child process. When wait(&status) is called, the parent process will block until any child process terminates, and the exit status of the child process is stored in the status variable.
+        */
         wait(&status);
         rv = status;  
     }
 
     if (piping !=0 )
     {
+        /*
+        In C, when piping is used, the dup2() system call is often used to redirect the output of one process to the input of another process. When this redirection is performed, it is necessary to close the file descriptors that are no longer needed.
+        In particular, it is important to close the STDOUT_FILENO file descriptor (which represents standard output) in the process that is sending output to the pipe. This is because, after the dup2() call, the file descriptor representing the writing end of the pipe is now associated with STDOUT_FILENO. If STDOUT_FILENO is not closed, any subsequent write operations that use this file descriptor will actually be sent to the pipe instead of to the original standard output, which could cause unexpected behavior and output.
+        In other words, closing STDOUT_FILENO ensures that the process only sends output to the writing end of the pipe, and not to any other file descriptor that may be associated with standard output.
+        */
         close(STDOUT_FILENO);
+
+
+        /*
+        the dup() function is used in piping to duplicate the file descriptor of the pipe onto the standard input or output file descriptors of the respective processes, thereby enabling inter-process communication through the pipe.
+        */
         dup(DuplicateFD);
+
+
+        /*
+        In C, when piping is used, it is important to close the file descriptors that are no longer needed to prevent potential issues such as deadlocks or resource leaks.
+        In particular, after the dup2() function is used to redirect the output of one process to the input of another process, it is important to close the write end of the pipe (i.e. pipeFD[1]) in the parent process. This is because the parent process no longer needs to write to the pipe, and keeping the write end open can cause problems, such as the child process blocking indefinitely on a read call waiting for data that will never come.
+        Closing the write end of the pipe in the parent process (close(pipeFD[1])) ensures that the child process will eventually receive an end-of-file indication when it attempts to read from the pipe, allowing it to gracefully exit once it has processed all of the data.
+        In summary, closing the write end of the pipe after the dup2() function is used helps prevent issues such as deadlocks, resource leaks, and other unintended behavior that can occur when file descriptors are not properly managed in a multi-process environment.
+        */
         close(pipeFD[1]);
+
+
+        /*
+        the wait() system call in the parent process ensures that the child process has completed its execution and any resources associated with it are properly cleaned up before the parent process exits. This helps prevent issues such as resource leaks and other unintended behavior that can occur when processes are not properly managed in a multi-process environment.
+    
+        In C, wait(NULL) is a system call that suspends the execution of the calling process until one of its child processes terminates. When a child process terminates, its exit status is collected by the parent process using the wait() system call.
+        The wait(NULL) system call is used when the parent process does not need to know the specific exit status of the child process. When wait(NULL) is called, the parent process will block until any child process terminates, and the exit status of the child process is discarded.
+        */
         wait(NULL);
     }
+
+    /*
+    In C, the main() function of a program is required to return an integer value to indicate the status of the program to the operating system. This value is commonly referred to as the "return value" or "exit status" of the program.
+    When a C program is executed in a terminal, the shell that is running in the terminal will display the return value of the program after it exits. This is often represented as rv or retval in the terminal, followed by the integer value that was returned by the program.
+    */
     return rv;
 }
 
