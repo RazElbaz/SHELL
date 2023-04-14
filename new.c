@@ -331,7 +331,15 @@ int change_status(char **args)
         return rv;
     }
 }
-
+int index1(char* arr){
+    int j;
+        for (j = 0; i < 1024; i++) {
+        if (strlen(arr) <= i) {
+            break;
+        }
+    }
+    return j;
+}
 int main()
 {
     
@@ -345,6 +353,7 @@ int main()
 
     while (1)
     {
+        memset(command, 0, sizeof(command));
         new_terminal = old_terminal;
         new_terminal.c_lflag &= ( ECHOE | ~ICANON);
         tcsetattr(STDIN_FILENO, TCSANOW, &new_terminal);
@@ -357,6 +366,7 @@ int main()
                 if(i<strlen(prompt+1)){
                 printf("\b\b\b   \b\b\b");
                 }
+                continue;
         }
         else if (c == '\033')
 		{
@@ -425,21 +435,20 @@ int main()
         }
         else{
         tcsetattr(STDIN_FILENO, TCSANOW, &old_terminal);
+        memset(command, 0, 1024);
         command[0]=c;
-        char str=0;
+        // printf("\n%ld",strlen(command));
+        // printf("%s",command[0]);
         char b;
+        int Flag=0;
         i=1;
-        while((b = getchar()) != '\n'){
-            
-            if(b == 127 || b=='\b'){
-                if(i==0){
-                printf("\b\b\b\b   \b\b\b");
- 
-                }
+        // printf("\n%ld",strlen(command));
+        while((b = getchar()) != '\n'){  
+             if(b == 127 || b=='\b'){
                 printf("\b\b\b   \b\b\b");
-                command[i] = '\0';
+                // command[i] = '\0';
                 i--;
-                
+                           
             }
             // else if(b=="^D")
             //     continue;    
@@ -451,8 +460,20 @@ int main()
         }
         command[i] = b;
         // printf("\n%ld\n",strlen(command));
-        i++;
-        command[i]='\0';
+        // printf("\n %ld %s\n",strlen(command),(command));
+        // printf("\n%ld\n",index1(command));
+        // printf("\n%c\n",(strlen(command)));
+        printf("\n%ld\n",strlen(command));
+        // int t=0;
+        // char curr[50];
+        // for(t ; t<46 ; t++){
+        //     curr[t]=command[t];
+        // }
+        // printf("\n%s\n",(curr));
+        // i++;
+        // command[strlen(command)]='\0';
+        i=1;
+        
         }
         
 
