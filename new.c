@@ -33,6 +33,7 @@ char *new_command;
 char* new_command2;
 char current_command[1024]; 
 char* end_if="fi\n";
+struct termios old_terminal, new_terminal;
 
 ///////////////////////////couters//////////////////////////////////////
 char **CountPIPE(char **args)
@@ -105,6 +106,7 @@ char *safe_strcpy(char *dest, size_t size, char *src) {
 ////https://man7.org/linux/man-pages/man2/pipe.2.html-> pipe
 int execute(char **args)
 {
+    tcgetattr(STDIN_FILENO, &old_terminal);
     rv = -1;
     piping  = 0;
     i = CountARGS(args);
@@ -121,7 +123,7 @@ int execute(char **args)
                perror("fork");
                exit(EXIT_FAILURE);
         }
-        if (cpid == 0)
+        else if (cpid == 0)
         {
             close(pipeFD[1]); // Reader will see EOF 
             close(0);
@@ -151,6 +153,9 @@ int execute(char **args)
         strcpy(currentCommand, lastCommand);
         split(currentCommand);
         execute(argv);
+        }
+        else{
+            printf("The command history list is empty");
         }
 
         return 0;
@@ -331,17 +336,14 @@ int change_status(char **args)
 
 int main()
 {
-    
+    tcgetattr(STDIN_FILENO, &old_terminal);
     mainProcess = getpid();
     signal(SIGINT, termination_handler); //SIGINT  interrupt from keyboard (ctrl-c)
     strcpy(prompt, "hello: ");
     last_command=0;
     char* prevCommand=malloc(sizeof(char) * 1024);
-                struct termios originalTermios, newTermios;
-        tcgetattr(STDIN_FILENO, &originalTermios);
-        newTermios = originalTermios;
-        newTermios.c_lflag &= ( ECHOE | ~ICANON);
-        tcsetattr(STDIN_FILENO, TCSANOW, &newTermios);
+    // tcgetattr(STDIN_FILENO, &old_terminal);
+
 
     while (1)
     {
@@ -349,6 +351,10 @@ int main()
         printf("\r");
         printf("%s", prompt);
         c=getchar();
+        
+        new_terminal = old_terminal;
+        new_terminal.c_lflag &= ( ECHOE | ~ICANON);
+        tcsetattr(STDIN_FILENO, TCSANOW, &new_terminal);
         if(c== 127){
                 if(i<strlen(prompt+1)){
                 printf("\b\b\b   \b\b\b");
@@ -356,10 +362,12 @@ int main()
         }
         else if (c == '\033')
 		{
+            
             printf("\33[2K");
 			a=getchar(); //skip the [
             b=getchar();
 			switch(b) { 
+                
 			case 'A':
                 if (commands.size==0)
                 {
@@ -377,7 +385,7 @@ int main()
             
                 prevCommand=(char *)get_command(&commands, last_command);
                 printf("%s", (char *)get_command(&commands, last_command));
-
+                tcgetattr(STDIN_FILENO, &old_terminal);
                 break;
 			case 'B':
                 if (commands.size==0 ||last_command >= commands.size-1 )
@@ -398,16 +406,19 @@ int main()
                 printf("\b");
                 prevCommand=(char *)get_command(&commands, last_command);
                 printf("%s", (char *)get_command(&commands, last_command));
+                tcgetattr(STDIN_FILENO, &old_terminal);
                 break;
 
     		}
             command[0]=c;
+            tcgetattr(STDIN_FILENO, &old_terminal);
          continue;
         }
 
         else if (c == '\n')
         {
-        
+        tcgetattr(STDIN_FILENO, &old_terminal);
+        prevCommand=(char *)get_command(&commands, last_command);
         new_command2= malloc(sizeof(char) * strlen(prevCommand));
         prevCommand[strlen(prevCommand)]=' ';
         strcpy(new_command2, prevCommand);
@@ -419,6 +430,7 @@ int main()
         continue;
         }
         else{
+        tcgetattr(STDIN_FILENO, &old_terminal);
         command[0]=c;
         char str=0;
         char b;
@@ -429,22 +441,24 @@ int main()
                 command[i] = '\0';
                 i--;
             }
-                
+            // else if(b=="^D")
+            //     continue;    
             else {
                 command[i] = b; i++;
              
-                };
-               
+                };  
         }
         command[i] = b;
         // printf("\n%ld\n",strlen(command));
         i++;
         command[i]='\0';
         }
+        
 
 
     //https://www.digitalocean.com/community/tutorials/execvp-function-c-plus-plus
     if (!strncmp(command, "if", 2)) {
+        tcgetattr(STDIN_FILENO, &old_terminal);
         while (1) {
             fgets(current_command, 1024, stdin);
             strcat(command, current_command);
@@ -475,6 +489,7 @@ int main()
         }
         
         if (strcmp(command, "!!")){
+            tcgetattr(STDIN_FILENO, &old_terminal);
             strcpy(lastCommand, command);
             // printf("%s",lastCommand);
         }
