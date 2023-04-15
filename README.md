@@ -17,14 +17,10 @@ The main goal of this assignment is to create a shell.
 
 # Explanation of the codes found in the project:
 
-In the assignment folder we received there were three files for the shell program:
-
+In the assignment folder we received there were three files for the shell program:  
 •shell1.c -prints a cursor and runs commands with arguments.  
-
 •shell2.c – adds routing to the file.  
-
 •shell3.c pipe adds   
-
 •key.c  
 
 The codes I wrote to accomplish the task:
