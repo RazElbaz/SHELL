@@ -85,39 +85,39 @@ https://linuxize.com/post/linux-cat-command/
 ```$person = David```  
 ```echo person```  
 ```echo $person```  
-```read name  
-hello```  
+```read name```  
+```hello```    
 ```echo name```  
 ```echo $name```  
 
-```prompt = show_if:  ```
+```prompt = show_if:```
   
-```if date | grep Sat  
-then  
- echo "Shabat Shalom"  
-else  
- echo "Hard way to go"  
-fi```  
+```if date | grep Sat ``` 
+```then  ```
+``` echo "Shabat Shalom" ``` 
+```else  ```
+``` echo "Hard way to go" ``` 
+```fi```  
  
-```if date | grep Sat  
-then  
- ls   
-fi  
+```if date | grep Sat```  
+```then  ```
+``` ls  ``` 
+```fi  
 ```  
 
 
 ```prompt = show_pipe: ```  
 ```cat > colors.txt```  
-```blue  
-black  
-red  
-red  
-green  
-blue  
-green  
-red  
-red  
-blue```  
+```blue  ```
+```black  ```
+```red  ```
+```red  ```
+```green  ```
+```blue  ```
+```green  ```
+```red  ```
+```red ``` 
+```blue```  
 ```Control-D```  
 
 ```cat colors.txt```  
