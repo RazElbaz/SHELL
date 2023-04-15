@@ -151,7 +151,8 @@ https://linuxize.com/post/linux-cat-command/
 ```sort colors.txt```  
 ```uniq -c colors.txt  ```  
 ```colors.txt head -3```  
-```head -3 colors.txt```  
+```head -3 colors.txt```   
+**arrows : up & down ↑↓ (like in the real shell)**  
 ```quit```  
 
 ## The task  
