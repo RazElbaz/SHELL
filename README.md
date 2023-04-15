@@ -90,7 +90,7 @@ hello```
 ```echo name```  
 ```echo $name```  
 
-```prompt = show_if:  
+```prompt = show_if:  ```
   
 ```if date | grep Sat  
 then  
