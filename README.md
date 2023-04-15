@@ -9,8 +9,10 @@ The main goal of this assignment is to create a shell
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable -->
 <table>
-
+  <tr>
     <td align="center"><a href="https://github.com/RazElbaz"><br /><sub><b>Raz Elbaz</b></sub></a><br /> </td>
+  </tr>
+</table>
 
 </table>
 ```ECHO <message>```
