@@ -111,10 +111,10 @@ https://linuxize.com/post/linux-cat-command/
 ```blue```  
 ```black```   
 ```red```   
-```red``` 
-```green``` 
-```blue``` 
-```green``` 
+```red```  
+```green```   
+```blue```  
+```green```  
 ```red```  
 ```red```  
 ```blue```  
