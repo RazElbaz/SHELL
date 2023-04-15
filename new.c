@@ -428,8 +428,14 @@ int execute(char **args)
             // close(STDOUT_FILENO);
         }
 
-        execvp(args[0], args);
+        int status_code=execvp(args[0], args);
+        if (status_code == -1) {
+                // Error executing the command
+                printf("Unknown command: %s\n", command);
+                exit(1);
+            }
     }
+
     /* parent continues here */
     if (amper == 0)
     {
@@ -688,8 +694,8 @@ int main()
             strcpy(lastCommand, command);
             // printf("%s",lastCommand);
         }
-
         
+
         //adding the new command to the command list
         new_command= malloc(sizeof(char)*strlen(command));
         strcpy(new_command, command);
