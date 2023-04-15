@@ -1,4 +1,18 @@
 # SHELL
+
+# Introduction:
+The main goal of this assignment is to create a shell
+
+## written by ✨
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+
+    <td align="center"><a href="https://github.com/RazElbaz"><br /><sub><b>Raz Elbaz</b></sub></a><br /> </td>
+
+</table>
 ```ECHO <message>```
 In C, the hyphen (-) is a common operator used for subtraction, and it can also be used to negate a value.
 
