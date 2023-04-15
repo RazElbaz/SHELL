@@ -54,25 +54,13 @@ https://linuxize.com/post/linux-cat-command/
 3. Enjoy my shell 🙂.
 -----------
 ## My shell support the following commands: 
-```ls``` ```!!``` ```text >> file```  ```text > file```  ```text 2> file```  ```cat > file``` 
-`````` 
-
-  
-
-```
-cat > colors.txt 
-**Enter**
-black  
-red  
-red  
-green  
-blue  
-green  
-red  
-red  
-blue  
+```ls``` ```!!``` ```text >> file```  ```text > file```  ```text 2> file```  ```cat > file``` ```date```
+``` cat > file
+**press Enter**
+some text
+**press Control-D**
 ```  
-```Control-D```  
+
 
 ### Running examples (from the file: Examples_to_run.txt )
 ```date >> myfile```    
