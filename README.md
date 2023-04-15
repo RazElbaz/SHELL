@@ -54,8 +54,17 @@ https://linuxize.com/post/linux-cat-command/
 3. Enjoy my shell 🙂.
 -----------
 ## My shell support the following commands: 
-```ls``` ```ls -l```  ```ls -a```  ```ls -h```  ```ls -t```  ```ls -R``` 
-```ls -S```  ```ls -r``` ```ls -u``` ```ls -1``` ```ls -m``` ```ls -C```
+arrows: :arrow_up: or :arrow_down:  ```ls``` ```ls -l```  ```ls -a```  ```ls -h```  ```ls -t```  ```ls -R``` ```prompt = new_prompt:``` 
+```ls -S```  ```ls -r``` ```ls -u``` ```ls -1``` ```ls -m``` ```ls -C``` ```echo text``` ```echo $?```
+```
+$var = David
+echo $var
+```
+```
+read name
+hello
+echo $name
+```
 ```!!``` ```text >> file```  ```text > file```  ```text 2> file```  ```cat > file``` ```date```
 ``` 
 cat > file
