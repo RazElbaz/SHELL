@@ -23,12 +23,12 @@ In the assignment folder we received there were three files for the shell progra
 •shell3.c - pipe adds   
 •key.c  
 
-The codes I wrote to accomplish the task:
+The codes I wrote to accomplish the task:  
 •**new.c**  
-The program that implements the assignment 
-•**Examples_to_run.txt**
-A text file that contains examples that can be run in the program
-•**Examples_from_running_my_program.txt**
+The program that implements the assignment  
+•**Examples_to_run.txt**  
+A text file that contains examples that can be run in the program.  
+•**Examples_from_running_my_program.txt**  
 A text file that contains examples that I ran in my program as proof that everything is working properly.  
 •**linkedlist.h and linkedlist.c**  
 Two programs that create a library for new variables to implement the task:
