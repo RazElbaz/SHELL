@@ -617,11 +617,13 @@ int main()
         printf("\r");
         printf("%s", prompt);
         i=1;
-        
+
         c=getchar();
+
+        //If the user presses the delete key
         if(c== 127 || c == '\b')
         {
-            if(i<strlen(prompt))
+            if(i<strlen(prompt)+1)
             {
                 printf("\b\b\b   \b");
                 }
@@ -629,17 +631,24 @@ int main()
         }
         else if (c == '\033')
 		{
+        /*
+        Task number: 12
+        Memory of the last commands (at least 20) Option to browse by
+        Arrows: "up" and "down"
+        (as in the real SHELL)
+        */
+            
             /*
-            Task number: 12
-            Memory of the last commands (at least 20) Option to browse by
-            Arrows: "up" and "down"
-            (as in the real SHELL)
+            printf("\33[2K") is a string that represents an ANSI escape sequence to clear the current line in a terminal or console window.
+            The escape sequence consists of the ASCII escape character (represented as \33), followed by the control sequence "[2K". 
+            The 2K sequence is the code for the "Erase in Line" (EL) control sequence, which erases the entire line that the cursor is currently on.
             */
             printf("\33[2K");
 			a=getchar(); //skip the [
-            b=getchar();
+            b=getchar(); // the real value
 			switch(b) { 
 			case 'A':
+                // code for arrow up
                 if (commands.size==0)
                 {
                     break;
@@ -648,17 +657,23 @@ int main()
                 {
                     last_command--;
                 }
-                
+
+                /*
+                 printf("\b") : When the backspace character is printed, it moves the cursor back one character, allowing you to overwrite the last character that was printed.
+                */
                 printf("\b");
                 printf("\b");
                 printf("\b");
                 printf("\b");
             
+                //Saving the displayed command in a variable
                 prevCommand=(char *)get_command(&commands, last_command);
-                printf("%s", (char *)get_command(&commands, last_command));
 
+                //Printing the appropriate command (according to the index that depends on the number of clicks) in the terminal when the arrow is clicked
+                printf("%s", (char *)get_command(&commands, last_command));
                 break;
 			case 'B':
+                // code for arrow down
                 if (commands.size==0 ||last_command >= commands.size-1 )
                 {
                     if(last_command == commands.size-1){
@@ -670,12 +685,19 @@ int main()
                 {
                     last_command++;
                 }
-                
+
+                /*
+                 printf("\b") : When the backspace character is printed, it moves the cursor back one character, allowing you to overwrite the last character that was printed.
+                */
                 printf("\b");
                 printf("\b");
                 printf("\b");
                 printf("\b");
+
+                //Saving the displayed command in a variable
                 prevCommand=(char *)get_command(&commands, last_command);
+
+                //Printing the appropriate command (according to the index that depends on the number of clicks) in the terminal when the arrow is clicked
                 printf("%s", (char *)get_command(&commands, last_command));
                 break;
 
@@ -686,21 +708,33 @@ int main()
 
         else if (c == '\n')
         {
+        //Restoring the original terminal settings
         tcsetattr(STDIN_FILENO, TCSANOW, &old_terminal);
-        if(commands.size>0){ //
+
+        if(commands.size>0){ 
+        //adding the new command to the command list
         prevCommand=(char *)get_command(&commands, last_command);
         new_command2= malloc(sizeof(char) * strlen(prevCommand));
         prevCommand[strlen(prevCommand)]=' ';
         strcpy(new_command2, prevCommand);
         add(&commands, new_command2);
+
+        //update the last command index to be the updated size
         last_command = commands.size;
+
         strcpy(command, new_command2);
         split(command);
+
+        //running the new command
         status = change_status(argv);
         }
         continue;
         }
-        else{
+
+        else
+        {
+
+        //Restoring the original terminal settings
         tcsetattr(STDIN_FILENO, TCSANOW, &old_terminal);
         memset(command, 0, 1024);
         command[0]=c;
@@ -710,6 +744,7 @@ int main()
         
         while((b = getchar()) != '\n')
         {  
+            //If the user presses the delete key
             if(b == 127 || b=='\b')
             {
                 printf("\b \b");
@@ -794,6 +829,7 @@ int main()
         }
         
         if (strcmp(command, "!!")){
+            //Restoring the original terminal settings
             tcsetattr(STDIN_FILENO, TCSANOW, &old_terminal);
             strcpy(lastCommand, command);
             // printf("%s",lastCommand);
