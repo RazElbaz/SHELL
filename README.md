@@ -41,7 +41,7 @@ In C programming, a Makefile is a script or file that contains a set of instruct
 The Makefile is used with the make utility, which reads the instructions in the Makefile and executes the necessary steps to build the program. The make utility determines which files need to be recompiled based on their dependencies and the modification time of each file.
 
 ### Assumptions I made:
-1. I assumed that the command !! Need to re-execute the last command typed.  
+1. I assumed that the command ```!!``` Need to re-execute the last command typed.  
 2. I assumed that the command cat > file would be executed as in the real Tremil: first typing the command **→** pressing Enter → typing the desired text → pressing Control-D as I read on many websites and among other things also on these websites:  
 https://www.hostinger.com/tutorials/linux-cat-command-tutorial-and-examples/
 https://linuxize.com/post/linux-cat-command/  
