@@ -23,14 +23,14 @@ In the assignment folder we received there were three files for the shell progra
 •shell3.c pipe adds   
 •key.c  
 
-The codes I wrote to accomplish the task:
+The codes I wrote to accomplish the task:  
 •**linkedlist.h and linkedlist.c** 
 Two programs that create a library for new variables to implement the task:
 *Var* - is designed to save new variables like in the real shell with key and value  
 *Node*- to create a variable of a doubly linked list with next and prv, in addition it has a data variable.  
-*List*- creating a doubly linked list whose fields are data and head, tail.    
-•**new.c**
-The program that implements the assignment
+*List*- creating a doubly linked list whose fields are data and head, tail.      
+•**new.c**  
+The program that implements the assignment  
 
 
 # The task  
