@@ -316,7 +316,7 @@ int execute(char **args)
         while (*echo_var)
         {
             
-            if (*echo_var!=NULL && *echo_var[0] == '$')
+            if (echo_var != NULL && echo_var[0][0] == '$')
             {
                 /*
                 Task number: 3
@@ -329,10 +329,13 @@ int execute(char **args)
                 */
                 Node *node = variables.head;
                 char *new_variable = NULL;
-                
+
+                /*
+                We will go through the list of saved variables so that if a defined variable is found it will be printed
+                */
                 while (node)
                 {
-                    if (!strcmp(((Var *)node->data)->key,*echo_var ))
+                    if (strncmp(((Var *)node->data)->key, *echo_var, strlen(*echo_var)) == 0)
                     {
                         new_variable=((Var *)node->data)->value;
                     }
@@ -351,7 +354,7 @@ int execute(char **args)
             will print
             abc xyz
             */
-                printf("%s ", *echo_var);
+            printf("%s ", echo_var[0]);
             }
 
             echo_var++;
@@ -434,6 +437,11 @@ int execute(char **args)
         memset(var->value, 0, 1024);
         strcpy(var->key + 1, args[1]);
         fgets(var->value, 1024, stdin);
+        /*
+        In C, strings are represented as arrays of characters terminated by a null character '\0'. When you receive input from the user, it is stored in a character array. 
+        If you don't add a null character at the end of the array, any string functions that operate on that array will not know where the end of the string is and may read past the end 
+        of the array,causing unexpected behavior or even crashes.
+        */
         var->value[strlen(var->value) -1] = '\0';
         add(&variables, var);
         return 0;
@@ -714,26 +722,35 @@ int main()
             };
                
         }
+        //adding '\n'
         command[i] = b;
+
+        /*
+        In C, strings are represented as arrays of characters terminated by a null character '\0'. When you receive input from the user, it is stored in a character array. 
+        If you don't add a null character at the end of the array, any string functions that operate on that array will not know where the end of the string is and may read past the end 
+        of the array,causing unexpected behavior or even crashes.
+        */
         i++;
         command[strlen(command)]='\0';
-        // printf("\n %ld %s \n",strlen(command),command);
+
+        //Resetting the index
         i=1;
-    
         }
+
+
     int if_flag=0;
     //https://www.digitalocean.com/community/tutorials/execvp-function-c-plus-plus
     if (!strncmp(command, "if", 2)) {
         /*
-            Task number: 13
-            Support for flow control, i.e. ELSE/IF. For example:
-            if date | grep Fri
-            then
-            echo "Shabbat Shalom"
-            else
-            echo "Hard way to go"
-            fi
-            Typing the condition will execute line by line, as shown here.
+        Task number: 13
+        Support for flow control, i.e. ELSE/IF. For example:
+        if date | grep Fri
+        then
+        echo "Shabbat Shalom"
+        else
+        echo "Hard way to go"
+        fi
+        Typing the condition will execute line by line, as shown here.
         */
         if_flag=1;
         while (1) {
@@ -758,7 +775,13 @@ int main()
             strcat(command, current_command);
         }
 
+        /*
+        In C, strings are represented as arrays of characters terminated by a null character '\0'. When you receive input from the user, it is stored in a character array. 
+        If you don't add a null character at the end of the array, any string functions that operate on that array will not know where the end of the string is and may read past the end 
+        of the array,causing unexpected behavior or even crashes.
+        */
         command[strlen(command) - 1] = '\0';
+
         if (!strcmp(command, "quit")){
             /*
             Task number: 7
@@ -780,6 +803,7 @@ int main()
         new_command= malloc(sizeof(char)*strlen(command));
         strcpy(new_command, command);
         add(&commands, new_command);
+
         //We will update the last command index to be the updated size
         last_command = commands.size;
 
