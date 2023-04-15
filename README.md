@@ -54,7 +54,7 @@ https://linuxize.com/post/linux-cat-command/
 3. Enjoy my shell 🙂.
 -----------
 ## My shell support the following commands: 
-arrows: :arrow_up: or :arrow_down:  ```ls``` ```ls -l```  ```ls -a```  ```ls -h```  ```ls -t```  ```ls -R``` ```prompt = new_prompt:``` ```!!``` ```text >> file```  ```text > file```  ```text 2> file```  ```cat > file``` ```date``` ```ls -S```  ```ls -r``` ```ls -u``` ```ls -1``` ```ls -m``` ```ls -C``` ```echo text``` ```echo $?``` ```pwd``` ```quit ``` ```rm file```
+arrows: :arrow_up: or :arrow_down:  ```ls``` ```ls -l```  ```ls -a```  ```ls -h```  ```ls -t```  ```ls -R``` ```prompt = new_prompt:``` ```!!``` ```text >> file```  ```text > file```  ```text 2> file```  ```cat > file``` ```date``` ```date -u``` ```ls -S```  ```ls -r``` ```ls -u``` ```ls -1``` ```ls -m``` ```ls -C``` ```echo text``` ```echo $?``` ```pwd``` ```quit ``` ```rm file``` ```cat file``` ``` | (piping) ``` ```wc -l < myfile``` ```ls -l nofile 2> mylog (for errors)``` ```Control-C```
 ```sort file.txt``` ```uniq -c file.txt``` ```head -3 file.txt```
 ```
 $var = David
