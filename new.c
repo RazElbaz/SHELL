@@ -617,6 +617,7 @@ int main()
         printf("\r");
         printf("%s", prompt);
         i=1;
+        
         c=getchar();
         if(c== 127 || c == '\b')
         {
