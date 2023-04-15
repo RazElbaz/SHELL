@@ -45,7 +45,7 @@ The Makefile is used with the make utility, which reads the instructions in the 
 2. I assumed that the command ```cat > file``` would be executed as in the real Tremil: first typing the command → pressing Enter → typing the desired text → pressing Control-D as I read on many websites and among other things also on these websites:  
 https://www.hostinger.com/tutorials/linux-cat-command-tutorial-and-examples/
 https://linuxize.com/post/linux-cat-command/  
-3. I assumed that if an if command was typed then it was typed correctly with fi at the end, and typed line by line as written in the assignment instructions. Therefore, after typing the command you cannot press the up arrow ↑ or alternatively do type ```!!``` To execute the command again (since it was defined that way in the allocation instructions, the '\n' character will cause errors)
+3. I assumed that if an if command was typed then it was typed correctly with fi at the end, and typed line by line as written in the assignment instructions. Therefore, after typing the command you can press the up arrow ↑ or alternatively type ```!!``` to see the command but from these options you cannot execute the command again (you can see with the arrows but not run with the enter arrow or with !! , because it was defined that way in the allocation instructions, the '\n' character will cause errors).
 
 -----------
 ##  How To Run
