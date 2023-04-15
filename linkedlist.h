@@ -4,6 +4,13 @@ typedef struct Var
     char *value;
 } Var;
 
+//https://www.programiz.com/dsa/doubly-linked-list
+/*
+A doubly linked list is a type of linked list in which each node consists of 3 components:
+*prev - address of the previous node
+data - data item
+*next - address of next node
+*/
 typedef struct Node
 {
   Var* data;

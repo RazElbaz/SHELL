@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include "linkedlist.h"
+//https://www.programiz.com/dsa/doubly-linked-list
 
 //display the list
 void printList(List *list) {
