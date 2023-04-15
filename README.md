@@ -11,8 +11,24 @@
 </table>
 
 </table>
+
 # Introduction:
-The main goal of this assignment is to create a shell
+The main goal of this assignment is to create a shell.
+
+# Explanation of the codes found in the project:
+
+In the assignment folder we received there were three files for the shell program:
+•shell1.c -prints a cursor and runs commands with arguments.
+•shell2.c – adds routing to the file.
+•shell3.c pipe adds 
+•key.c
+
+The codes I wrote to accomplish the task:
+**linkedlist.h and linkedlist.c** 
+creating a library for creating variables:
+*Var* - is designed to save new variables like in the real shell with key and value
+*Node*- to create a variable of a two-way linked list with next and prv, in addition it has a data variable.
+*List*- creating a two-way linked list whose fields are data and head, tail.
 
 
 ```ECHO <message>```
