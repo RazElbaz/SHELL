@@ -11,7 +11,7 @@
 </table>
 
 </table>
-:arrow_up: UP or :arrow_down: DOWN
+
 # Introduction:
 The main goal of this assignment is to create a shell.
 
@@ -150,7 +150,7 @@ blue
 ```uniq -c colors.txt  ```  
 ```colors.txt head -3```  
 ```head -3 colors.txt```   
-**arrows : up & down ↑↓ (like in the real shell)**  
+:arrow_up: UP or :arrow_down: DOWN (like in the real shell)
 ```quit```  
 
 ## The task  
