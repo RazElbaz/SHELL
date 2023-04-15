@@ -33,6 +33,7 @@ creating a library for creating variables:
 
 # The task  
 You must add the following features (you can add functions to main :)  
+
 1. Routing writing to stderr
 hello: ls -l nofile 2> mylog
 
@@ -45,8 +46,8 @@ Built-in commands in the shell (placed before fork (placed before fork) and must
 hello : prompt = myprompt
 (The command contains three words separated by two spaces)  
 3. echo command that prints the arguments:
-hello: echo abc xyz
-will print
+hello: echo abc xyz  
+will print  
 abc xyz
 4. The command  
 hello: echo $?
@@ -54,41 +55,41 @@ Print the status of the last command executed.
 5. A command that changes the current working folder of the shell:
 hello: cd mydir  
 6. A command that repeats the last command:
-hello: !!
+hello: !!  
 (two exclamation marks in the first word of the command)  
 7. Command to exit the shell:
-hello: quit  
+hello: quit 
 8. If the user typed C-Control, the program will not finish but will print the
-The message:
-You typed Control-C!
-If the SHELL runs another process, the process will be thrown by the system
+The message:  
+You typed Control-C!  
+If the SHELL runs another process, the process will be thrown by the system  
 (default behavior)  
-9. Possibility to chain several commands in a pipe.
+9. Possibility to chain several commands in a pipe.  
 For each command in pipe a dynamic allocation of argv is needed  
-10. Adding variables to the shell:
-hello: $person = David
-hello: echo person
-person
-hello: echo $person
-David  
-11. read command
-hello: echo Enter a string
-read name
-Hello
-echo $name
+10. Adding variables to the shell:  
+hello: $person = David  
+hello: echo person  
+person  
+hello: echo $person  
+David    
+11. read command  
+hello: echo Enter a string  
+read name  
 Hello  
-12. Memory of the last commands (at least 20) Possibility to browse by
-Arrows: "up" and "down"
-(as in the real SHELL)  
-13. Support for flow control, ie ELSE/IF. For example:
-if date | grep Fri
-then
-  echo "Shabbat Shalom"
-else
-  echo "Hard way to go"
-fi  
-Typing the condition will execute line by line, as shown here.
-After you have added the features, please run the following commands:
+echo $name  
+Hello    
+12. Memory of the last commands (at least 20) Possibility to browse by  
+Arrows: "up" and "down"  
+(as in the real SHELL)    
+13. Support for flow control, ie ELSE/IF. For example:  
+if date | grep Fri  
+then  
+  echo "Shabbat Shalom"  
+else  
+  echo "Hard way to go"  
+fi    
+Typing the condition will execute line by line, as shown here.  
+After you have added the features, please run the following commands:  
 ./shell
 hello: date >> myfile
 hello: cat myfile
