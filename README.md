@@ -139,10 +139,7 @@ fi
 
 
 ```prompt = show_pipe: ```  
-```cat > colors.txt``` 
-
-  
-
+```cat > colors.txt```  
 ```
 blue  
 black  
