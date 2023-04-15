@@ -1,0 +1,178 @@
+(base) raz@raz-VirtualBox:~/SHELL-main$ make
+cc    -c -o new.o new.c
+gcc -o myshell new.o linkedlist.o
+(base) raz@raz-VirtualBox:~/SHELL-main$ ./myshell
+hello: date >> myfile
+hello: cat myfile
+Sat 15 Apr 2023 04:03:54 PM IDT
+hello: date -u >> myfile
+hello: cat myfile
+Sat 15 Apr 2023 04:03:54 PM IDT
+Sat 15 Apr 2023 01:04:14 PM UTC
+hello: wc -l < myfile
+2
+hello: ls -l nofile 2> mylog
+hello: cat mylog
+ls: cannot access 'nofile': No such file or directory
+hello: ls -l >> mylog
+hello: cat mylog
+ls: cannot access 'nofile': No such file or directory
+total 120
+drwxrwxr-x 2 raz raz  4096 Apr  9 20:58 before change
+-rw-rw-r-- 1 raz raz     0 Apr 15 15:49 Examples_from_running_my_program.txt
+-rw-rw-r-- 1 raz raz   950 Apr 15 16:05 Examples_to_run.txt
+-rw-rw-r-- 1 raz raz  1106 Apr  3 13:42 key.c
+-rw-rw-r-- 1 raz raz  1848 Apr 10 09:49 linkedlist.c
+-rw-rw-r-- 1 raz raz   358 Apr 10 10:33 linkedlist.h
+-rw-rw-r-- 1 raz raz  3200 Apr 15 15:39 linkedlist.o
+-rw-rw-r-- 1 raz raz   219 Apr  7 12:18 makefile
+-rw-rw---- 1 raz raz    64 Apr 15 16:04 myfile
+-rw-rw---- 1 raz raz    54 Apr 15 16:05 mylog
+-rwxrwxr-x 1 raz raz 23752 Apr 15 16:03 myshell
+-rw-rw-r-- 1 raz raz 30321 Apr 15 16:03 new.c
+-rw-rw-r-- 1 raz raz 20768 Apr 15 16:03 new.o
+drwxrwxr-x 3 raz raz  4096 Apr 15 15:55 raz
+hello: prompt = hi: 
+hi:mkdir mydir
+hi:cd mydir
+hi:pwd
+/home/raz/SHELL-main/mydir
+hi:touch file1 file2 file3
+hi:ls
+file1  file2  file3
+hi:!!
+file1  file2  file3
+hi:prompt = show_echo:
+show_echo:echo abc xyz
+abc xyz 
+show_echo:ls
+file1  file2  file3
+show_echo:echo $?
+0
+show_echo:ls no_such_file
+ls: cannot access 'no_such_file': No such file or directory
+show_echo:echo $?
+512
+show_echo:ls no_such_file 2> file
+show_echo:cat file
+ls: cannot access 'no_such_file': No such file or directory
+show_echo:^C
+You typed Control-C!
+show_echo:prompt = show_variables:
+show_variables:$person = David
+show_variables:echo person
+person 
+show_variables:echo $person
+David 
+show_variables:read name
+hello
+show_variables:echo name
+name 
+show_variables:echo $name
+hello 
+show_variables:prompt = show_if:
+show_if:if date | grep Sat
+then
+ echo "Shabat Shalom"
+else
+ echo "Hard way to go"
+fi
+Sat 15 Apr 2023 04:09:00 PM IDT
+Shabat Shalom
+show_if:if date | grep Sat
+then
+ ls 
+fi
+Sat 15 Apr 2023 04:09:11 PM IDT
+file  file1  file2  file3
+show_if:prompt = show_pipe: 
+show_pipe:cat > colors.txt
+blue
+black
+red
+red
+green
+blue
+green
+red
+red
+blue
+show_pipe:cat colors.txt
+blue
+black
+red
+red
+green
+blue
+green
+red
+red
+blue
+show_pipe:cat colors.txt | cat | cat | cat
+blue
+black
+red
+red
+green
+blue
+green
+red
+red
+blue
+show_pipe:sort colors.txt | uniq -c | sort -r | head -3
+      4 red
+      3 blue
+      2 green
+show_pipe:ls | wc -l
+5
+show_pipe:ls | tee list
+colors.txt
+file
+file1
+file2
+file3
+show_pipe:ls -l | wc -l
+7
+show_pipe:prompt = show_more_commands:
+show_more_commands:mkdir date_dir
+show_more_commands:cd date_dir
+show_more_commands:pwd
+/home/raz/SHELL-main/mydir/date_dir
+show_more_commands:cd ..
+show_more_commands:pwd
+/home/raz/SHELL-main/mydir
+show_more_commands:touch date_file
+show_more_commands:ls
+colors.txt  date_file  file1  file3
+date_dir    file       file2  list
+show_more_commands:rm date_file
+show_more_commands:ls
+colors.txt  date_dir  file  file1  file2  file3  list
+show_more_commands:sort colors.txt
+black
+blue
+blue
+blue
+green
+green
+red
+red
+red
+red
+show_more_commands:uniq -c colors.txt
+      1 blue
+      1 black
+      2 red
+      1 green
+      1 blue
+      1 green
+      2 red
+      1 blue
+show_more_commands:colors.txt head -3
+Unknown command: colors.txt
+show_more_commands:head -3 colors.txt
+blue
+black
+red
+show_more_commands:quit
+(base) raz@raz-VirtualBox:~/SHELL-main$ 
