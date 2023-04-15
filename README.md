@@ -54,7 +54,9 @@ https://linuxize.com/post/linux-cat-command/
 3. Enjoy my shell 🙂.
 -----------
 ## My shell support the following commands: 
-```ls``` ```!!``` ```text >> file```  ```text > file```  ```text 2> file```  ```cat > file``` ```date```
+```ls``` ```ls -l```  ```ls -a```  ```ls -h```  ```ls -t```  ```ls -R``` 
+```ls -S```  ```ls -r``` ```ls -u``` ```ls -1``` ```ls -m``` ```ls -C```
+```!!``` ```text >> file```  ```text > file```  ```text 2> file```  ```cat > file``` ```date```
 ``` 
 cat > file
 **press Enter**
@@ -64,9 +66,9 @@ some text
 ```
 if condition 
 then  
-  // code to be executed if condition is true
+   // code to be executed if condition is true
 else  
- // code to be executed if condition is false
+  // code to be executed if condition is false
 fi  //to finish typing the if command
 ```
 
