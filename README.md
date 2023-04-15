@@ -19,13 +19,13 @@ The main goal of this assignment is to create a shell.
 
 In the assignment folder we received there were three files for the shell program:
 
-•shell1.c -prints a cursor and runs commands with arguments.
+•shell1.c -prints a cursor and runs commands with arguments.  
 
-•shell2.c – adds routing to the file.
+•shell2.c – adds routing to the file.  
 
-•shell3.c pipe adds 
+•shell3.c pipe adds   
 
-•key.c
+•key.c  
 
 The codes I wrote to accomplish the task:
 **linkedlist.h and linkedlist.c** 
