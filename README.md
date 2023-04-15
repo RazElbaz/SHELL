@@ -55,7 +55,7 @@ https://linuxize.com/post/linux-cat-command/
 -----------
 ## My shell support the following commands: 
 arrows: :arrow_up: or :arrow_down:  ```ls``` ```ls -l```  ```ls -a```  ```ls -h```  ```ls -t```  ```ls -R``` ```prompt = new_prompt:``` ```!!``` ```text >> file```  ```text > file```  ```text 2> file```  ```cat > file``` ```date``` ```date -u``` ```ls -S```  ```ls -r``` ```ls -u``` ```ls -1``` ```ls -m``` ```ls -C``` ```echo text``` ```echo $?``` ```pwd``` ```quit ``` ```rm file``` ```cat file``` ``` | (piping) ``` ```wc -l < myfile``` ```ls -l nofile 2> mylog (for errors)``` ```Control-C```
-```sort file.txt``` ```uniq -c file.txt``` ```head -3 file.txt```
+```sort file.txt``` ```uniq -c file.txt``` ```head -3 file.txt``` ```cd``` ```cd ..``` ```mkdir date dir ```
 ```
 $var = David
 echo $var
@@ -80,6 +80,7 @@ else
 fi  //to finish typing the if command
 ```
 
+And much more, feel free to try
 
 ### Running examples (from the file: Examples_to_run.txt )
 ```date >> myfile```    
