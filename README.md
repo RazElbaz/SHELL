@@ -23,7 +23,7 @@ In the assignment folder we received there were three files for the shell progra
 •shell3.c - pipe adds   
 •key.c  
 
-#### The codes I wrote to accomplish the task:  
+### The codes I wrote to accomplish the task: 
 •**new.c**  
 The program that implements the assignment  
 •**Examples_to_run.txt**  
