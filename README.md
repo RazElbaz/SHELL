@@ -103,6 +103,15 @@ https://linuxize.com/post/linux-cat-command/
 
 ---  
 ---  
+```
+if date | grep Sat
+then
+ echo "Shabat Shalom"
+else
+ echo "Hard way to go"
+fi
+```  
+
 
 ```if date | grep Sat```    
 ```then```  
