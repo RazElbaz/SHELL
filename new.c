@@ -82,6 +82,10 @@ void split(char *command)
     while (part_of_command != NULL)
     {
         argv[i] = part_of_command;
+        /*
+        In C, strtok is a function used to tokenize a given string based on a specified delimiter. When the strtok function is called with the first argument as NULL, it continues tokenizing the same string from where it left off during the last call.
+        So strtok(NULL, delim) is used to retrieve the next token in the string that was not processed by the previous call to strtok, where delim is the delimiter used for tokenizing the string.
+        */
         part_of_command = strtok(NULL, " ");
         i++;
     }
@@ -94,6 +98,11 @@ void split(char *command)
 void termination_handler(int signum)
 {
 /**
+Task number: 8
+If the user typed C-Control, the program will not finish but will print the
+The message:
+You typed Control-C!
+If the SHELL runs another process, the process will be thrown by the system)default behavior(
 * A function designed to handle the signal as soon as the user presses ctrl+c
 */    
     if (getpid() == mainProcess) {
@@ -104,7 +113,8 @@ void termination_handler(int signum)
         return;
     }
     else{
-        // fprintf(stderr, "\ncaught signal: %d\n", signum);
+        fprintf(stderr, "\ncaught signal: %d\n", signum);
+        kill(mainProcess, SIGKILL); //If the SHELL runs another process, the process will be thrown by the system
         return;
     }
 }
@@ -155,12 +165,12 @@ int execute(char **args)
     rv = -1; piping  = 0; i = CountARGS(args); char **CountPIPEPointer = CountPIPE(args); 
     /*
     Task number: 9
-Option to chain several commands in a pipe.
-For each command in pipe a dynamic allocation of argv is needed
+    Option to chain several commands in a pipe.
+    For each command in pipe a dynamic allocation of argv is needed
     */
     if (CountPIPEPointer != NULL)
     {
-        piping  = 1;
+        piping++;
         *CountPIPEPointer = NULL;
         pipe(pipeFD);
         cpid = fork();
@@ -256,8 +266,10 @@ For each command in pipe a dynamic allocation of argv is needed
         return 0;
     }
     /*
-
-    */
+        Task number: 5
+        A command that changes the shell's current working directory:
+        hello: cd mydir
+        */
     if (strcmp(args[0], "cd")==0)
     {
         if (chdir(args[1]) != 0){ // chdir is a system call.
@@ -350,7 +362,6 @@ For each command in pipe a dynamic allocation of argv is needed
     Task number: 1
     Redirect writes to stderr
     hello: ls –l nofile 2> mylog
-
     Adding to an existing file by >>
     hello: ls -l >> mylog
     As in a normal shell program, if the file does not exist, it will be created.
@@ -379,7 +390,6 @@ For each command in pipe a dynamic allocation of argv is needed
     Continue task number: 1
     Redirect writes to stderr
     hello: ls –l nofile 2> mylog
-
     Adding to an existing file by >>
     hello: ls -l >> mylog
     As in a normal shell program, if the file does not exist, it will be created.
@@ -524,6 +534,12 @@ int main()
         }
         else if (c == '\033')
 		{
+            /*
+            Task number: 12
+            Memory of the last commands (at least 20) Option to browse by
+            Arrows: "up" and "down"
+            (as in the real SHELL)
+            */
             printf("\33[2K");
 			a=getchar(); //skip the [
             b=getchar();
@@ -576,7 +592,7 @@ int main()
         else if (c == '\n')
         {
         tcsetattr(STDIN_FILENO, TCSANOW, &old_terminal);
-        if(commands.size>0){
+        if(commands.size>0){ //
         prevCommand=(char *)get_command(&commands, last_command);
         new_command2= malloc(sizeof(char) * strlen(prevCommand));
         prevCommand[strlen(prevCommand)]=' ';
@@ -601,7 +617,7 @@ int main()
         {  
             if(b == 127 || b=='\b')
             {
-                printf("\b\b\b   \b\b\b");
+                printf("\b \b");
                 // command[i] = '\0';
                 i--;
                            
@@ -615,14 +631,25 @@ int main()
         command[i] = b;
         i++;
         command[strlen(command)]='\0';
+        // printf("\n %ld %s \n",strlen(command),command);
         i=1;
+    
         }
-        
-
-    int flag=0;
+    int if_flag=0;
     //https://www.digitalocean.com/community/tutorials/execvp-function-c-plus-plus
     if (!strncmp(command, "if", 2)) {
-        flag=1;
+        /*
+            Task number: 13
+            Support for flow control, i.e. ELSE/IF. For example:
+            if date | grep Fri
+            then
+            echo "Shabbat Shalom"
+            else
+            echo "Hard way to go"
+            fi
+            Typing the condition will execute line by line, as shown here.
+        */
+        if_flag=1;
         while (1) {
             fgets(current_command, 1024, stdin);
             strcat(command, current_command);
@@ -647,6 +674,11 @@ int main()
 
         command[strlen(command) - 1] = '\0';
         if (!strcmp(command, "quit")){
+            /*
+            Task number: 7
+            command to exit the shell:
+            hello: quit
+            */
             // tcsetattr(STDIN_FILENO, TCSANOW, &old_terminal);
             exit(0);
         }
@@ -657,11 +689,16 @@ int main()
             // printf("%s",lastCommand);
         }
 
+        
+        //adding the new command to the command list
         new_command= malloc(sizeof(char)*strlen(command));
         strcpy(new_command, command);
         add(&commands, new_command);
+        //We will update the last command index to be the updated size
         last_command = commands.size;
-        if(!flag){
+
+        //if the last command is "if" we dont want to run this command again(Because we already ran it after it was called)
+        if(!if_flag){
         split(command);
         status = change_status(argv);
         }
