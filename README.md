@@ -115,7 +115,7 @@ https://linuxize.com/post/linux-cat-command/
 ```green``` 
 ```blue``` 
 ```green``` 
-```red``` 
+```red```  
 ```red```  
 ```blue```  
 ```Control-D```  
