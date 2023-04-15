@@ -18,20 +18,27 @@ The main goal of this assignment is to create a shell.
 # Explanation of the codes found in the project:
 
 In the assignment folder we received there were three files for the shell program:  
-•shell1.c -prints a cursor and runs commands with arguments.  
+•shell1.c - prints a cursor and runs commands with arguments.  
 •shell2.c – adds routing to the file.  
-•shell3.c pipe adds   
+•shell3.c - pipe adds   
 •key.c  
 
-The codes I wrote to accomplish the task:  
+The codes I wrote to accomplish the task:
+•**new.c**  
+The program that implements the assignment 
+•**Examples_to_run.txt**
+A text file that contains examples that can be run in the program
+•**Examples_from_running_my_program.txt**
+A text file that contains examples that I ran in my program as proof that everything is working properly.  
 •**linkedlist.h and linkedlist.c**  
 Two programs that create a library for new variables to implement the task:
 *Var* - is designed to save new variables like in the real shell with key and value  
 *Node*- to create a variable of a doubly linked list with next and prv, in addition it has a data variable.  
 *List*- creating a doubly linked list whose fields are data and head, tail.      
-•**new.c**  
-The program that implements the assignment  
+•**makefile**   
+In C programming, a Makefile is a script or file that contains a set of instructions for compiling and building a program from source code files. The Makefile specifies the dependencies between the different source code files and the rules for how to build the program, including the compiler options, libraries to link, and other build-time options.
 
+The Makefile is used with the make utility, which reads the instructions in the Makefile and executes the necessary steps to build the program. The make utility determines which files need to be recompiled based on their dependencies and the modification time of each file.
 
 # The task  
 You must add the following features (you can add functions to main :)  
