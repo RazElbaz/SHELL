@@ -72,6 +72,31 @@ int CountARGS(char **args)
 
 ///////////////////////////////////////////helper functions//////////////////////////////////////
 
+char *safe_strcpy(char *dest, size_t size, char *src) 
+{
+/**
+ * A helper function designed to simulate the strcpy function using the strcat function
+ */
+    if (size > 0) {
+        *dest = '\0';
+        return strncat(dest, src, size - 1);
+    }
+    return dest;
+}
+
+int first_index_in_str(char* arr){
+/**
+ * A helper function designed to find the index of the first element in the string
+ */
+    int j;
+        for (j = 0; i < 1024; i++) {
+        if (strlen(arr) <= i) {
+            break;
+        }
+    }
+    return j;
+}
+
 void split(char *command)
 {
 /**
@@ -91,8 +116,6 @@ void split(char *command)
     }
     argv[i] = NULL;
 }
-
-
 
 //https://www.gnu.org/software/libc/manual/html_node/Basic-Signal-Handling.html
 void termination_handler(int signum)
@@ -117,31 +140,6 @@ If the SHELL runs another process, the process will be thrown by the system)defa
         kill(mainProcess, SIGKILL); //If the SHELL runs another process, the process will be thrown by the system
         return;
     }
-}
-
-char *safe_strcpy(char *dest, size_t size, char *src) 
-{
-/**
- * A helper function designed to simulate the strcpy function using the strcat function
- */
-    if (size > 0) {
-        *dest = '\0';
-        return strncat(dest, src, size - 1);
-    }
-    return dest;
-}
-
-int first_index_in_str(char* arr){
-/**
- * A helper function designed to find the index of the first element in the string
- */
-    int j;
-        for (j = 0; i < 1024; i++) {
-        if (strlen(arr) <= i) {
-            break;
-        }
-    }
-    return j;
 }
 
 
@@ -170,25 +168,81 @@ int execute(char **args)
     */
     if (CountPIPEPointer != NULL)
     {
-        piping++;
         *CountPIPEPointer = NULL;
-        pipe(pipeFD);
-        cpid = fork();
-        if (cpid == -1)
-        {
-               perror("fork");
-               exit(EXIT_FAILURE);
+        piping++;
+        
+        /*
+        In C, pipe(pipeFD) is a system call that creates a new pipe, which is a unidirectional data channel that allows data to be passed between two processes. The pipeFD parameter is a pointer to an integer array that will be used to store the file descriptors for the read and write ends of the pipe.
+        */
+        int result=pipe(pipeFD);
+        if (result == -1) {
+        // Error occurred
+        printf("Failed to create pipe\n");
+        exit(EXIT_FAILURE);
         }
+
+
+        cpid = fork();
+
+        /*
+        the fork() system call can return -1 if it fails to create a new process. This can happen if the system is unable to allocate resources such as memory or if the maximum number of processes allowed per user or per system has already been reached.
+        When fork() returns -1, it means that the child process was not created, and the parent process should handle the error appropriately.
+        */
+        if (cpid == -1)
+        {       
+            // Error occurred
+            perror("Error occurred: Failed to create new process\n");
+            exit(EXIT_FAILURE);
+        }
+
+        /*
+        When the fork() system call is successful and creates a new process, it returns a value of 0 in the child process. This indicates to the child process that it is a new process, separate from the parent process.
+        */
+        // Child process
         else if (cpid == 0)
         {
-            close(pipeFD[1]); // Reader will see EOF 
-            close(0);
-            dup(pipeFD[0]); //Duplicate FD, returning a new file descriptor on the same file
+            /*
+            In C, close(pipeFD[1]) is a system call that closes the file descriptor pipeFD[1], which is the file descriptor for the write end of a pipe. When a process no longer needs a file descriptor, it should close it to free up system resources and avoid resource leaks.
+            */
+            int status =close(pipeFD[1]); // Reader will see EOF 
+            if (status == -1) {
+            // Error occurred
+            printf("Failed to close file descriptor\n");
+            exit(EXIT_FAILURE);
+            } 
+
+            /*
+            In C, close(0) is a system call that closes the standard input file descriptor, which has a value of 0. This is typically associated with the keyboard or another input device.
+            When you close the standard input file descriptor, any subsequent attempts to read from it will fail. This is usually done when you want to redirect input from a file or another process to replace the standard input.
+            */
+            int status_file =close(0);
+            if (status_file == -1) {
+            // Error occurred
+            printf("Failed to close standard input file descriptor\n");
+            exit(EXIT_FAILURE);
+            }
+
+            /*
+            In C, dup(pipeFD[0]) is a system call that duplicates the file descriptor pipeFD[0], which is the file descriptor for the read end of a pipe. The dup() system call creates a new file descriptor that refers to the same open file description as the original file descriptor. This new file descriptor can be used to read data from the pipe.
+            */
+            int newFD =dup(pipeFD[0]); //Duplicate FD, returning a new file descriptor on the same file
+            if (newFD == -1) 
+            {
+            // Error occurred
+            printf("Failed to duplicate file descriptor\n");
+            exit(EXIT_FAILURE);
+            } 
             execute(CountPIPEPointer + 1);
             exit(0);
         }
 
         DuplicateFD = dup(STDOUT_FILENO); //Duplicate FD, returning a new file descriptor on the same file.
+        if (DuplicateFD == -1) {
+            // Error occurred
+            printf("Failed to duplicate file descriptor\n");
+            exit(EXIT_FAILURE);
+        }
+        // Redirect output to write end of pipe
         dup2(pipeFD[1], STDOUT_FILENO); //Duplicate FD to FD2, closing FD2 and making it open on the same file.
 
     }
@@ -202,6 +256,125 @@ int execute(char **args)
     {
         amper = 1;
         args[i - 1] = NULL;
+    
+    }
+
+    int redirect = -1;
+    /*
+    Task number: 1
+    Redirect writes to stderr
+    hello: ls –l nofile 2> mylog
+    Adding to an existing file by >>
+    hello: ls -l >> mylog
+    As in a normal shell program, if the file does not exist, it will be created.
+    */
+    if (i >= 2 && (!strcmp(argv[i - 2], ">") || !strcmp(argv[i - 2], ">>")))
+    {
+        outfile = argv[i - 1];
+        redirect = 1;
+    }
+    else if (i >= 2 && !strcmp(argv[i - 2], "2>"))
+    {
+        outfile = argv[i - 1];
+        redirect = 2;
+    }
+    else if (i >= 2 && !strcmp(argv[i - 2], "<"))
+    {
+        outfile = argv[i - 1];
+        redirect = 0;
+    }
+
+    /*
+    Task number: 2
+    Command to change the cursor:
+    hello : prompt = myprompt
+    (The command contains three words separated by two spaces)
+    */
+    if (strcmp(args[0], "prompt")==0)
+    {
+         if (!strcmp(argv[1], "="))
+             {
+                strcpy(prompt, args[2]);
+            }
+
+        return 0;
+    }
+        if (strcmp(args[0], "echo")==0)
+    {
+        char **echo_var = args + 1;
+        /*
+        Task number: 4
+        The command: hello: echo $?
+        Print the status of the last command executed.
+        */
+        if (strcmp(*echo_var, "$?")==0)
+        {
+            printf("%d\n", status);
+            return 0;
+        }
+
+        while (*echo_var)
+        {
+            
+            if (*echo_var!=NULL && *echo_var[0] == '$')
+            {
+                /*
+                Task number: 3
+                ---Part A of task number: 3---
+                echo command that prints the arguments:
+                hello: echo abc xyz
+                will print
+                abc xyz
+                Here is the search for the variable $var in the list of variables
+                */
+                Node *node = variables.head;
+                char *new_variable = NULL;
+                
+                while (node)
+                {
+                    if (!strcmp(((Var *)node->data)->key,*echo_var ))
+                    {
+                        new_variable=((Var *)node->data)->value;
+                    }
+                    node = node->next;
+                }
+                if (new_variable != NULL)
+                    printf("%s ", new_variable);
+            }
+
+            else{
+            /*
+            Task number: 3
+            ---Part B of task number: 3---
+            echo command that prints the arguments:
+            hello: echo abc xyz
+            will print
+            abc xyz
+            */
+                printf("%s ", *echo_var);
+            }
+
+            echo_var++;
+        }
+        printf("\n");
+        return 0;
+    }
+
+    else
+        amper = 0;
+    
+    /*
+        Task number: 5
+        A command that changes the shell's current working directory:
+        hello: cd mydir
+        */
+    if (strcmp(args[0], "cd")==0)
+    {
+        if (chdir(args[1]) != 0){ // chdir is a system call.
+        printf(" %s: no such directory\n", argv[1]);
+    
+    }
+        return 0;
     }
     /* 
     Task number:  6
@@ -265,125 +438,10 @@ int execute(char **args)
         add(&variables, var);
         return 0;
     }
-    /*
-        Task number: 5
-        A command that changes the shell's current working directory:
-        hello: cd mydir
-        */
-    if (strcmp(args[0], "cd")==0)
-    {
-        if (chdir(args[1]) != 0){ // chdir is a system call.
-        printf(" %s: no such directory\n", argv[1]);
-    
-    }
-        return 0;
-    }
-    /*
-    Task number: 2
-    Command to change the cursor:
-    hello : prompt = myprompt
-    (The command contains three words separated by two spaces)
-    */
-    if (strcmp(args[0], "prompt")==0)
-    {
-         if (!strcmp(argv[1], "="))
-             {
-                strcpy(prompt, args[2]);
-            }
-
-        return 0;
-    }
-
-    if (strcmp(args[0], "echo")==0)
-    {
-        char **echo_var = args + 1;
-        /*
-        Task number: 4
-        The command: hello: echo $?
-        Print the status of the last command executed.
-        */
-        if (strcmp(*echo_var, "$?")==0)
-        {
-            printf("%d\n", status);
-            return 0;
-        }
-
-        while (*echo_var)
-        {
-            
-            if (*echo_var!=NULL && *echo_var[0] == '$')
-            {
-                /*
-                Task number: 3
-                ---Part A of task number: 3---
-                echo command that prints the arguments:
-                hello: echo abc xyz
-                will print
-                abc xyz
-                Here is the search for the variable $var in the list of variables
-                */
-                Node *node = variables.head;
-                char *new_variable = NULL;
-                
-                while (node)
-                {
-                    if (!strcmp(((Var *)node->data)->key,*echo_var ))
-                    {
-                        new_variable=((Var *)node->data)->value;
-                    }
-                    node = node->next;
-                }
-                if (new_variable != NULL)
-                    printf("%s ", new_variable);
-            }
-
-            else{
-            /*
-            Task number: 3
-            ---Part B of task number: 3---
-            echo command that prints the arguments:
-            hello: echo abc xyz
-            will print
-            abc xyz
-            */
-                printf("%s ", *echo_var);
-            }
-
-            echo_var++;
-        }
-        printf("\n");
-        return 0;
-    }
-
-    else
-        amper = 0;
-    int redirect = -1;
-    /*
-    Task number: 1
-    Redirect writes to stderr
-    hello: ls –l nofile 2> mylog
-    Adding to an existing file by >>
-    hello: ls -l >> mylog
-    As in a normal shell program, if the file does not exist, it will be created.
-    */
-    if (i >= 2 && (!strcmp(argv[i - 2], ">") || !strcmp(argv[i - 2], ">>")))
-    {
-        outfile = argv[i - 1];
-        redirect = 1;
-    }
-    else if (i >= 2 && !strcmp(argv[i - 2], "2>"))
-    {
-        outfile = argv[i - 1];
-        redirect = 2;
-    }
-    else if (i >= 2 && !strcmp(argv[i - 2], "<"))
-    {
-        outfile = argv[i - 1];
-        redirect = 0;
-    }
 
 
     /* for commands not part of the shell command language */ 
+    // Fork a new process to execute the command
     ProccesID = fork();
 
     /*
@@ -427,7 +485,7 @@ int execute(char **args)
             args[i - 2] = NULL;
             // close(STDOUT_FILENO);
         }
-
+        // Child process: execute the command
         int status_code=execvp(args[0], args);
         if (status_code == -1) {
                 // Error executing the command
@@ -435,18 +493,24 @@ int execute(char **args)
                 exit(1);
             }
     }
-
+    else if (ProccesID == -1) {
+            // Error forking a new process
+            printf("Error forking a new process\n");
+            exit(1);
+        }
     /* parent continues here */
-    if (amper == 0)
-    {
+    else {
+            
         /**
          * In C, the process ID -1 is a special value that represents an error condition. This value is typically used in system calls to indicate that the call failed, and the specific error code can be retrieved using the errno global variable.
         */
         ProccesID = -1;
+
+        
         /**
          * wait(&status) system call is used when the parent process needs to know the exit status of the child process. When wait(&status) is called, the parent process will block until any child process terminates, and the exit status of the child process is stored in the status variable.
         */
-        wait(&status);
+        wait(&status); // Parent process: wait for the child process to finish
         rv = status;  
     }
 
@@ -457,14 +521,25 @@ int execute(char **args)
         In particular, it is important to close the STDOUT_FILENO file descriptor (which represents standard output) in the process that is sending output to the pipe. This is because, after the dup2() call, the file descriptor representing the writing end of the pipe is now associated with STDOUT_FILENO. If STDOUT_FILENO is not closed, any subsequent write operations that use this file descriptor will actually be sent to the pipe instead of to the original standard output, which could cause unexpected behavior and output.
         In other words, closing STDOUT_FILENO ensures that the process only sends output to the writing end of the pipe, and not to any other file descriptor that may be associated with standard output.
         */
-        close(STDOUT_FILENO);
+        int status = close(STDOUT_FILENO);
 
+        if (status == -1) {
+            // Error occurred
+            printf("Failed to close standard output file descriptor\n");
+            exit(EXIT_FAILURE);
+        } 
 
         /*
         the dup() function is used in piping to duplicate the file descriptor of the pipe onto the standard input or output file descriptors of the respective processes, thereby enabling inter-process communication through the pipe.
+        In C, dup(DuplicateFD) is a system call that duplicates the file descriptor specified by DuplicateFD, and returns a new file descriptor that is the lowest numbered file descriptor not currently open for the process.
+        The new file descriptor returned by dup() points to the same open file description as the file descriptor specified by DuplicateFD. This means that any operations performed on the new file descriptor will affect the same file as the original file descriptor.
         */
-        dup(DuplicateFD);
-
+        int newFD =dup(DuplicateFD);
+        if (newFD == -1) {
+            // Error occurred
+            printf("Failed to duplicate file descriptor\n");
+            exit(EXIT_FAILURE);
+        } 
 
         /*
         In C, when piping is used, it is important to close the file descriptors that are no longer needed to prevent potential issues such as deadlocks or resource leaks.
@@ -472,7 +547,12 @@ int execute(char **args)
         Closing the write end of the pipe in the parent process (close(pipeFD[1])) ensures that the child process will eventually receive an end-of-file indication when it attempts to read from the pipe, allowing it to gracefully exit once it has processed all of the data.
         In summary, closing the write end of the pipe after the dup2() function is used helps prevent issues such as deadlocks, resource leaks, and other unintended behavior that can occur when file descriptors are not properly managed in a multi-process environment.
         */
-        close(pipeFD[1]);
+        int status_pipeFD =close(pipeFD[1]); // Reader will see EOF 
+            if (status_pipeFD == -1) {
+            // Error occurred
+            printf("Failed to close file descriptor\n");
+            exit(EXIT_FAILURE);
+        } 
 
 
         /*
