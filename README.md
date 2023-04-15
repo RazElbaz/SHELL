@@ -33,7 +33,6 @@ creating a library for creating variables:
 
 # The task  
 You must add the following features (you can add functions to main :)  
-
 1. Routing writing to stderr
 hello: ls -l nofile 2> mylog
 
@@ -90,42 +89,42 @@ else
 fi    
 Typing the condition will execute line by line, as shown here.  
 After you have added the features, please run the following commands:  
-./shell
-hello: date >> myfile
-hello: cat myfile
-hello: date -u >> myfile
-hello: cat myfile
-hello: wc -l < myfile
-hello: prompt = hi:
-hi: mkdir mydir
-hi: cd mydir
-hi: pwd
-hi: touch file1 file2 file3
-hi: ls
-hi: !!
-hi: echo abc xyz
-hi: ls
-hi: echo $?
-hi: ls no_such_file
-hi: echo $?
-hi: ls no_such_file 2> file
-hi: Control-C
-hi: cat > colors.txt
-blue
-black
-red
-red
-green
-blue
-green
-red
-red
-blue
-Control-D
-hi: cat colors.txt
-hi: cat colors.txt | cat cat cat
-hi: sort colors.txt | uniq -c | sort -r | head -3
-hi: quit
+./shell  
+hello: date >> myfile  
+hello: cat myfile  
+hello: date -u >> myfile  
+hello: cat myfile  
+hello: wc -l < myfile  
+hello: prompt = hi:  
+hi: mkdir mydir  
+hi: cd mydir  
+hi: pwd  
+hi: touch file1 file2 file3  
+hi: ls  
+hi: !!  
+hi: echo abc xyz  
+hi: ls  
+hi: echo $?  
+hi: ls no_such_file  
+hi: echo $?  
+hi: ls no_such_file 2> file  
+hi: Control-C  
+hi: cat > colors.txt  
+blue  
+black  
+red  
+red  
+green  
+blue  
+green  
+red  
+red  
+blue  
+Control-D  
+hi: cat colors.txt  
+hi: cat colors.txt | cat cat cat  
+hi: sort colors.txt | uniq -c | sort -r | head -3  
+hi: quit  
 
 
 ```ECHO <message>```
