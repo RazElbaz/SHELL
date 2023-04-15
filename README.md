@@ -109,7 +109,7 @@ https://linuxize.com/post/linux-cat-command/
 ```prompt = show_pipe: ```  
 ```cat > colors.txt```  
 ```blue```  
-```black```  
+```black```   
 ```red```   
 ```red``` 
 ```green``` 
