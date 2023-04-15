@@ -93,13 +93,12 @@ https://linuxize.com/post/linux-cat-command/
 ```prompt = show_if:```  
 
 ---  
-```if date | grep Sat ``` 
-```then  ```
-``` echo "Shabat Shalom" ``` 
-```else  ```
-``` echo "Hard way to go" ``` 
+```if date | grep Sat ```  
+```then```  
+``` echo "Shabat Shalom" ```   
+```else```  
+``` echo "Hard way to go" ```  
 ```fi```  
-
 ---  
  
 ---  
@@ -107,13 +106,12 @@ https://linuxize.com/post/linux-cat-command/
 ```then```  
 ``` ls```   
 ```fi```
-
  ---  
 
 ```prompt = show_pipe: ```  
 ```cat > colors.txt``` 
 
- --
+---  
 ```blue```  
 ```black```   
 ```red```   
@@ -124,8 +122,7 @@ https://linuxize.com/post/linux-cat-command/
 ```red```  
 ```red```  
 ```blue```  
-
- --
+-- -
 ```Control-D```  
 
 ```cat colors.txt```  
