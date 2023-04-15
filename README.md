@@ -53,94 +53,96 @@ https://linuxize.com/post/linux-cat-command/
 2. Run with ``./myshell```
 3. Enjoy my shell 🙂.
 -----------
-## My shell support the following commands:
-```date >> myfile```
-```cat myfile```
-date -u >> myfile
-cat myfile
-wc -l < myfile
-ls -l nofile 2> mylog
-cat mylog
-ls -l >> mylog
-cat mylog
-prompt = hi:
-mkdir mydir
-cd mydir
-pwd
-touch file1 file2 file3
-ls
-!!
+## My shell support the following commands:  
+```date >> myfile```    
+```cat myfile```  
+```date -u >> myfile```  
+```cat myfile```  
+```wc -l < myfile```  
+```ls -l nofile 2> mylog```  
+```cat mylog```  
+```ls -l >> mylog```  
+```cat mylog```  
+```prompt = hi:```  
+```mkdir mydir```  
+```cd mydir```  
+```pwd```  
+```touch file1 file2 file3```  
+```ls```  
+```!!```  
 
-prompt = show_echo:
-echo abc xyz
-ls
-echo $?
-ls no_such_file
-echo $?
-ls no_such_file 2> file
-cat file
-Control-C
+```prompt = show_echo:```  
+```echo abc xyz```  
+```ls```  
+```echo $?```  
+```ls no_such_file```  
+```echo $?```  
+```ls no_such_file 2> file```  
+```cat file```  
+```Control-C```  
 
-prompt = show_variables:
-$person = David
-echo person
-echo $person
-read name
-hello
-echo name
-echo $name
+```prompt = show_variables:```  
+```$person = David```  
+```echo person```  
+```echo $person```  
+```read name  
+hello```  
+```echo name```  
+```echo $name```  
 
-prompt = show_if:
+```prompt = show_if:  
+  
+```if date | grep Sat  
+then  
+ echo "Shabat Shalom"  
+else  
+ echo "Hard way to go"  
+fi```  
+ 
+```if date | grep Sat  
+then  
+ ls   
+fi  
+```  
 
-if date | grep Sat
-then
- echo "Shabat Shalom"
-else
- echo "Hard way to go"
-fi
 
-if date | grep Sat
-then
- ls 
-fi
+```prompt = show_pipe: ```  
+```cat > colors.txt```  
+```blue  
+black  
+red  
+red  
+green  
+blue  
+green  
+red  
+red  
+blue```  
+```Control-D```  
 
-prompt = show_pipe: 
-cat > colors.txt
-blue
-black
-red
-red
-green
-blue
-green
-red
-red
-blue
-Control-D
+```cat colors.txt```  
+```cat colors.txt | cat | cat | cat```  
+```sort colors.txt | uniq -c | sort -r | head -3```  
+```ls | wc -l```  
+```ls | tee list```  
+```ls -l | wc -l```  
 
-cat colors.txt
-cat colors.txt | cat | cat | cat
-sort colors.txt | uniq -c | sort -r | head -3
-ls | wc -l
-ls | tee list
-ls -l | wc -l
-
-prompt = show_more_commands:
-mkdir date_dir
-cd date_dir
-pwd
-cd ..
-pwd
-cd date_dir
-touch date_file
-ls
-rm date_file
-ls
-sort colors.txt
-uniq -c colors.txt  
-colors.txt head -3
-head -3 colors.txt
-quit
+```prompt = show_more_commands:```  
+```mkdir date_dir```  
+```cd date_dir```  
+```pwd```  
+```cd ..```  
+```pwd```  
+```cd date_dir```  
+```touch date_file```  
+```ls```  
+```rm date_file```  
+```ls```  
+```sort colors.txt```  
+```uniq -c colors.txt  ```  
+```colors.txt head -3```  
+```head -3 colors.txt```  
+```quit```  
 
 ## The task  
 You must add the following features (you can add functions to main :)  
