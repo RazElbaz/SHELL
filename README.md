@@ -150,7 +150,7 @@ blue
 ```uniq -c colors.txt  ```  
 ```colors.txt head -3```  
 ```head -3 colors.txt```   
-:arrow_up: UP or :arrow_down: DOWN (like in the real shell)
+arrows: :arrow_up: UP or :arrow_down: DOWN (like in the real shell)  
 ```quit```  
 
 ## The task  
