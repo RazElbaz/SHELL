@@ -108,15 +108,15 @@ https://linuxize.com/post/linux-cat-command/
 
 ```prompt = show_pipe: ```  
 ```cat > colors.txt```  
-```blue  ```
-```black  ```
-```red  ```
-```red  ```
-```green  ```
-```blue  ```
-```green  ```
-```red  ```
-```red ``` 
+```blue```  
+```black```  
+```red```   
+```red``` 
+```green``` 
+```blue``` 
+```green``` 
+```red``` 
+```red```  
 ```blue```  
 ```Control-D```  
 
