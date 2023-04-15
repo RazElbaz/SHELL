@@ -47,6 +47,13 @@ https://www.hostinger.com/tutorials/linux-cat-command-tutorial-and-examples/
 https://linuxize.com/post/linux-cat-command/  
 3. I assumed that if an if command was typed then it was typed correctly with fi at the end, and typed line by line as written in the assignment instructions. Therefore, after typing the command you cannot press the up arrow ↑ or alternatively do type ```!!``` To execute the command again (since it was defined that way in the allocation instructions, the '\n' character will cause errors)
 
+-----------
+##  How To Run
+1. Compile files first with ```make``` or ```make all``` in terminal.
+2. Run with ``./myshell```
+3. Enjoy my shell 🙂.
+-----------
+
 # The task  
 You must add the following features (you can add functions to main :)  
 
@@ -142,9 +149,6 @@ hi: cat colors.txt
 hi: cat colors.txt | cat cat cat  
 hi: sort colors.txt | uniq -c | sort -r | head -3  
 hi: quit  
-
-
-```ECHO <message>```
 
 Put ♥ in the task attached here task1.pdf in the definition of the instructions there is sometimes the sign (–) instead (-) and this may cause problems when it is typed in the terminal of the program for the following reason:
 In C, the hyphen (-) is a common operator used for subtraction, and it can also be used to negate a value.
