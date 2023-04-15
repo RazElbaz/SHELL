@@ -91,19 +91,18 @@ https://linuxize.com/post/linux-cat-command/
 ```echo $name```  
 
 ```prompt = show_if:```
-  
+  -------
 ```if date | grep Sat ``` 
 ```then  ```
 ``` echo "Shabat Shalom" ``` 
 ```else  ```
 ``` echo "Hard way to go" ``` 
 ```fi```  
- 
-```if date | grep Sat```  
-```then  ```
-``` ls  ``` 
-```fi  
-```  
+ -------
+```if date | grep Sat```    
+```then```  
+``` ls```   
+```fi```  
 
 
 ```prompt = show_pipe: ```  
