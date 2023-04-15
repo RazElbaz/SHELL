@@ -33,9 +33,10 @@ creating a library for creating variables:
 
 # The task  
 You must add the following features (you can add functions to main :)  
+
+
 1. Routing writing to stderr
 hello: ls -l nofile 2> mylog
-
 Adding to an existing file by >>
 hello: ls -l >> mylog
 As in a normal shell program, if the file does not exist, it will be created.
