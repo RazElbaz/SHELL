@@ -55,11 +55,20 @@ https://linuxize.com/post/linux-cat-command/
 -----------
 ## My shell support the following commands: 
 ```ls``` ```!!``` ```text >> file```  ```text > file```  ```text 2> file```  ```cat > file``` ```date```
-``` cat > file
+``` 
+cat > file
 **press Enter**
 some text
 **press Control-D**
 ```  
+```
+if condition 
+then  
+  // code to be executed if condition is true
+else  
+ // code to be executed if condition is false
+fi  //to finish typing the if command
+```
 
 
 ### Running examples (from the file: Examples_to_run.txt )
