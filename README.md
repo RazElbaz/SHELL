@@ -53,7 +53,28 @@ https://linuxize.com/post/linux-cat-command/
 2. Run with ``./myshell```
 3. Enjoy my shell 🙂.
 -----------
-## My shell support the following commands:  
+## My shell support the following commands: 
+```ls``` ```!!``` ```text >> file```  ```text > file```  ```text 2> file```  ```cat > file``` 
+`````` 
+
+  
+
+```
+cat > colors.txt 
+**Enter**
+black  
+red  
+red  
+green  
+blue  
+green  
+red  
+red  
+blue  
+```  
+```Control-D```  
+
+### Running examples (from the file: Examples_to_run.txt )
 ```date >> myfile```    
 ```cat myfile```  
 ```date -u >> myfile```  
